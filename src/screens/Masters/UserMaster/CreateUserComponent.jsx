@@ -31,6 +31,7 @@ import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAct
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getRoleData } from '../RoleMaster/RoleMasterAction';
 import { toast } from 'react-toastify';
+import { getJobRoleMasterListThunk } from '../../../redux/services/jobRoleMaster';
 
 function CreateUserComponent({ match }) {
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -54,9 +55,7 @@ function CreateUserComponent({ match }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const Notify = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.notify
-  );
+  const Notify = useSelector((dashbordSlice) => dashbordSlice.dashboard.notify);
 
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
@@ -83,6 +82,19 @@ function CreateUserComponent({ match }) {
   const stateDropdown = useSelector(
     (DashbordSlice) => DashbordSlice.dashboard.activeState
   );
+
+  const { jobRoleMasterList, isLoading } = useSelector(
+    (state) => state?.jobRoleMaster
+  );
+
+  const jobRoleDropDown =
+    jobRoleMasterList &&
+    jobRoleMasterList
+      ?.filter((d) => d.is_active === 1)
+      .map((i) => ({
+        value: i.id,
+        label: i.job_role
+      }));
 
   const options = [
     { value: 'MY_TICKETS', label: 'My Tickets' },
@@ -149,9 +161,9 @@ function CreateUserComponent({ match }) {
     confirmed_PassErr: '',
     roleErr: '',
     designationErr: '',
-    departmentErr: ''
+    departmentErr: '',
+    jobRoleErr: ''
   });
-
   function checkingValidation(form) {
     var selectFirstName = form.getAll('first_name')[0];
     var selectMiddleName = form.getAll('middle_name')[0];
@@ -162,6 +174,7 @@ function CreateUserComponent({ match }) {
     var selectPassword = form.getAll('password')[0];
     // var selectWhatsapp = form.getAll('whats_app_contact_no')[0];
     var selectRole = form.getAll('role_id')[0];
+    var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
 
     let flag = 0;
@@ -195,6 +208,9 @@ function CreateUserComponent({ match }) {
     } else if (selectRole === '') {
       setInputState({ ...state, roleErr: ' Please Select role' });
       flag = 1;
+    } else if (selectJobRole === '') {
+      setInputState({ ...state, jobRoleErr: ' Please Select job role' });
+      flag = 1;
     } else if (selectDesignation === '') {
       setInputState({ ...state, designationErr: ' Please Select designation' });
       flag = 1;
@@ -203,7 +219,6 @@ function CreateUserComponent({ match }) {
         ...state,
         passwordErr: ' Please maintain password length 6 to 20 characters'
       });
-      alert('Please maintain password length 6 to 20 characters');
 
       flag = 1;
     } else if (selectPassword.length > 20) {
@@ -211,7 +226,6 @@ function CreateUserComponent({ match }) {
         ...state,
         passwordErr: ' Please maintain password length 6 to 20 characters'
       });
-      alert('Please maintain password length 6 to 20 characters');
 
       flag = 1;
     } else if (selectContactNo.length < 10) {
@@ -227,13 +241,10 @@ function CreateUserComponent({ match }) {
       });
       flag = 1;
     } else if (contactValid === true) {
-      alert('Enter valid Contact Number');
       flag = 1;
     } else if (whatsappValid === true) {
-      alert('Enter valid Whatsapp Number');
       flag = 1;
     } else if (mailError === true) {
-      alert('Invalid Email');
       flag = 1;
     }
     return flag;
@@ -355,17 +366,22 @@ function CreateUserComponent({ match }) {
   };
 
   const [selectRole, setSelctRole] = useState(null);
+  const [selectJobRole, setSelcJobtRole] = useState(null);
+
   const handleSelectRole = (e) => {
     const newValue = e;
     setSelctRole(newValue);
+  };
+  const handleSelectJobRole = (e) => {
+    const newValue = e;
+    setSelcJobtRole(newValue);
   };
   const handleForm = async (e) => {
     e.preventDefault();
     if (loading) {
       return;
     }
-    setLoading(true); // Set loading state to true
-    // setNotify(null);
+    setLoading(true);
 
     const form = new FormData(e.target);
     var flag = 1;
@@ -384,15 +400,12 @@ function CreateUserComponent({ match }) {
     }
 
     if (confirmPasswordError === true) {
-      alert('Password Does not Match');
       setLoading(false); // Reset loading state
       return false;
     } else if (mailError === true) {
-      alert('Enter valid email');
       setLoading(false); // Reset loading state
       return false;
     } else if (pincodeValid === true) {
-      alert('Enter valid Pincode');
       setLoading(false); // Reset loading state
       return false;
     } else if (
@@ -404,17 +417,25 @@ function CreateUserComponent({ match }) {
     ) {
       if (flag === 1) {
         dispatch(postUserData(form)).then((res) => {
-          if (
-            res?.payload?.data?.status === 1 &&
-            res?.payload?.status === 200
-          ) {
-            toast.success(res?.payload?.data?.message);
-            navigate(`/${_base}/User`);
-            dispatch(getEmployeeData());
-            // setNotify({ type: 'success', message: res.payload.data.message });
-            setTimeout(() => {
+          if (res?.payload?.status === 200) {
+            if (res?.payload?.data?.status === 1) {
+              // Success case
+              toast.success(res?.payload?.data?.message, {
+                autoClose: 5000 // 10 seconds in milliseconds
+              });
               navigate(`/${_base}/User`);
-            }, 3000);
+              dispatch(getEmployeeData());
+
+              // Navigate after 3 seconds
+              setTimeout(() => {
+                navigate(`/${_base}/User`);
+              }, 3000);
+            }
+          } else {
+            // Error case when status code is not 200
+            toast.error('An unexpected error occurred. Please try again.', {
+              autoClose: 5000 // 10 seconds in milliseconds
+            });
           }
           setLoading(false);
         });
@@ -430,7 +451,7 @@ function CreateUserComponent({ match }) {
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
           setCustomerDrp(
-            res?.data.data
+            res?.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -443,6 +464,7 @@ function CreateUserComponent({ match }) {
   }, [dispatch]);
 
   const handleDependentChange = (e, type) => {
+    if (!e || Object.entries(e).length === 0) return;
     if (type === 'COUNTRY') {
       setStateDropdownData(
         stateDropdown &&
@@ -549,6 +571,7 @@ function CreateUserComponent({ match }) {
     roleDropdown?.filter((d) => {
       return d.role.toLowerCase() === 'user';
     });
+
   const filterCutomerRole = customerSort
     ?.filter((d) => d.is_active === 1)
     .map((d) => ({
@@ -558,6 +581,14 @@ function CreateUserComponent({ match }) {
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
+  // console.log(orderedCustomerRoleData, "orderedCustomerRoleData")
+
+  const customerRolesData = [
+    {
+      label: 'User',
+      value: 0
+    }
+  ];
 
   const accountForChange = async (account_for) => {
     setSelctRole(null);
@@ -709,16 +740,24 @@ function CreateUserComponent({ match }) {
     if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+  useEffect(() => {
+    dispatch(getJobRoleMasterListThunk());
+  }, []);
 
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create User" />
-      {Notify && <Alert alertData={Notify} />}
 
-      <form onSubmit={handleForm} ref={userForm} method="post">
+      <form
+        autoComplete="off"
+        onSubmit={handleForm}
+        ref={userForm}
+        method="post"
+      >
         <Tabs
           defaultActiveKey={tabKey}
           activeKey={tabKey}
@@ -767,6 +806,7 @@ function CreateUserComponent({ match }) {
                         </label>
                         <div className="col-sm-3">
                           <Select
+                            classNamePrefix="react-select"
                             id="customer_id"
                             name="customer_id"
                             required={true}
@@ -792,7 +832,7 @@ function CreateUserComponent({ match }) {
                           id="first_name"
                           name="first_name"
                           placeholder="Please enter first name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
@@ -825,7 +865,7 @@ function CreateUserComponent({ match }) {
                           id="middle_name"
                           name="middle_name"
                           placeholder="Middle Name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
@@ -858,7 +898,7 @@ function CreateUserComponent({ match }) {
                           id="last_name"
                           name="last_name"
                           placeholder="Last Name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
@@ -904,7 +944,8 @@ function CreateUserComponent({ match }) {
                             const email = event?.target?.value;
                             if (
                               !email.match(
-                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                // /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/i
                               )
                             ) {
                               setInputState({
@@ -943,11 +984,12 @@ function CreateUserComponent({ match }) {
                           className="form-control"
                           id="user_name"
                           name="user_name"
+                          autoComplete="off"
                           placeholder="Username"
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
-                          maxLength={30}
+                          maxLength={50}
                           onChange={(event) => {
                             if (event.target.value === '') {
                               setInputState({
@@ -1085,6 +1127,7 @@ function CreateUserComponent({ match }) {
                             onKeyPress={(e) => {
                               Validation.password(e);
                             }}
+                            autoComplete="new-password"
                             onChange={handlePasswordValidation}
                             onPaste={(e) => {
                               e.preventDefault();
@@ -1187,6 +1230,7 @@ function CreateUserComponent({ match }) {
                       </label>
                       <div className="col-sm-3">
                         <Select
+                          classNamePrefix="react-select"
                           id="role_id"
                           name="role_id"
                           // defaultValue={filteredRoles}
@@ -1197,8 +1241,11 @@ function CreateUserComponent({ match }) {
                               ? orderedSelfRoleData
                               : orderedCustomerRoleData
                           }
+                          isClearable={true}
                           onChange={(e) => {
                             handleSelectRole(e);
+                            if (!e || Object.entries(e).length === 0) return;
+
                             if (e.value === '') {
                               setInputState({
                                 ...state,
@@ -1231,10 +1278,14 @@ function CreateUserComponent({ match }) {
                       </label>
                       <div className="col-sm-3">
                         <Select
+                          classNamePrefix="react-select"
                           id="designation_id"
                           name="designation_id"
                           options={sortDesignationDropdown}
+                          isClearable={true}
                           onChange={(event) => {
+                            if (!event || Object.entries(event).length === 0)
+                              return;
                             if (event.value === '') {
                               setInputState({
                                 ...state,
@@ -1257,8 +1308,51 @@ function CreateUserComponent({ match }) {
                         )}
                       </div>
                     </div>
+                    <div
+                      className="form-group row mt-4"
+                      style={{ position: 'relative', display: 'flex' }}
+                    >
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Select Job Role : <Astrick color="red" />
+                        </b>
+                      </label>
+                      <div className="col-sm-3">
+                        <Select
+                          classNamePrefix="react-select"
+                          id="job_role"
+                          name="job_role"
+                          // defaultValue={filteredRoles}
+                          value={selectJobRole}
+                          // options={filteredRoles}
+                          options={jobRoleDropDown}
+                          isClearable={true}
+                          onChange={(e) => {
+                            handleSelectJobRole(e);
+                            if (!e || Object.entries(e).length === 0) return;
+                            if (e.value === '') {
+                              setInputState({
+                                ...state,
+                                jobRoleErr: 'Please Select Job Role'
+                              });
+                            } else {
+                              setInputState({ ...state, jobRoleErr: '' });
+                            }
+                          }}
+                        />
+                        {inputState && (
+                          <small
+                            style={{
+                              color: 'red',
+                              position: 'relative'
+                            }}
+                          >
+                            {inputState.jobRoleErr}
+                          </small>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  {/* CARD BODY */}
                 </div>
                 {/* CARD */}
 
@@ -1277,9 +1371,9 @@ function CreateUserComponent({ match }) {
                           className="form-control form-control-sm"
                           id="address"
                           name="address"
-                          placeholder="Enter maximum 250 character"
+                          placeholder="Enter maximum 1000 character"
                           rows="4"
-                          maxLength={250}
+                          maxLength={1000}
                           // onKeyPress={(e) => {
                           //   Validation.addressFieldOnly(e);}}
                         />
@@ -1332,9 +1426,11 @@ function CreateUserComponent({ match }) {
                       </label>
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={CountryData}
                           name="country_id"
                           id="country_id"
+                          isClearable={true}
                           onChange={(e) => handleDependentChange(e, 'COUNTRY')}
                         />
                       </div>
@@ -1350,7 +1446,8 @@ function CreateUserComponent({ match }) {
                           //     ? stateDropdown
                           //     : []
                           // }
-
+                          classNamePrefix="react-select"
+                          isClearable={true}
                           options={stateDropdownData}
                           name="state_id"
                           id="state_id"
@@ -1370,9 +1467,11 @@ function CreateUserComponent({ match }) {
 
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={cityDropdownData && cityDropdownData}
                           name="city_id"
                           id="city_id"
+                          isClearable={true}
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ''}
                         />
@@ -1425,12 +1524,13 @@ function CreateUserComponent({ match }) {
                         <td className="text-center">{idx + 1}</td>
                         <td>
                           <Select
+                            classNamePrefix="react-select"
                             isSearchable={true}
                             name="department_id[]"
                             id="department_id[]"
                             key={idx}
                             className="basic-multi-select"
-                            classNamePrefix="select"
+                            // classNamePrefix="select"
                             options={departmentDropdown}
                             value={departmentDropdown.filter((d) =>
                               Array.isArray(item.department_id)
@@ -1439,19 +1539,20 @@ function CreateUserComponent({ match }) {
                             )}
                             required
                             style={{ zIndex: '100' }}
-                            onChange={(selectedOption) =>
-                              handleUserSelect(selectedOption, idx)
-                            }
+                            onChange={(selectedOption) => {
+                              handleUserSelect(selectedOption, idx);
+                            }}
                           />
                         </td>
                         <td>
                           <Select
+                            classNamePrefix="react-select"
                             options={options}
                             id={`ticket_show_type_id_` + idx}
-                            name="ticket_show_type[]"
-                            onChange={(e) =>
-                              handleCheckInput(e, idx, 'TICKET_SHOW')
-                            }
+                            name="ticket_show_type_id[]"
+                            onChange={(e) => {
+                              handleCheckInput(e, idx, 'TICKET_SHOW');
+                            }}
                             value={options.filter((d) =>
                               Array.isArray(item.ticket_show_type)
                                 ? item.ticket_show_type.includes(d.value)

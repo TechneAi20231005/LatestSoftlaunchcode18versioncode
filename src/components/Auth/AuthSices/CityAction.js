@@ -1,6 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import CityService from '../../../services/MastersService/CityService';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 const cityService = new CityService();
 const manageMenuService = new ManageMenuService();
@@ -17,7 +19,7 @@ export const postCityComponent = createAsyncThunk(
         return res.message;
       }
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -30,7 +32,7 @@ export const getCity = createAsyncThunk(
       const data = res?.data;
       return data;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -43,7 +45,7 @@ export const getRole = createAsyncThunk(
       const data = res.data;
       return data;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );

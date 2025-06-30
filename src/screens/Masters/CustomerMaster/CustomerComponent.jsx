@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
-
 import CustomerService from '../../../services/MastersService/CustomerService';
 
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
 import { _base } from '../../../settings/constants';
 
 import 'react-data-table-component-extensions/dist/index.css';
@@ -13,9 +10,9 @@ import 'react-data-table-component-extensions/dist/index.css';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getCustomerData, getRoles } from '../../Dashboard/DashboardAction';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { errorHandler } from '../../../utils';
+import moment from 'moment';
 
 function CustomerComponent() {
   //initial state
@@ -23,9 +20,7 @@ function CustomerComponent() {
   const dispatch = useDispatch();
   const location = useLocation();
   //redux state
-  const { getAllCustomerData, exportCustomerData } = useSelector(
-    (state) => state.dashboard
-  );
+  const { getAllCustomerData } = useSelector((state) => state.dashboard);
 
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCustomerList
@@ -36,34 +31,38 @@ function CustomerComponent() {
   );
 
   //local state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [notify, setNotify] = useState(null);
 
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(getAllCustomerData, searchTerm);
-    setFilteredData(filteredList);
-  }, [getAllCustomerData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(getAllCustomerData);
+  const exportDataKeys = {
+    name: 'Customer Name',
+    customer_type: 'Customer Type',
+    email_id: 'Email',
+    contact_no: 'Contact No',
+    address: 'Address',
+    pincode: 'Pincode',
+    country: 'Country',
+    state: 'State',
+    city: 'City',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Customer Master Record'
   };
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      accessorFn: (originalRow) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/Customer/Edit/` + row.id}
+            to={`/${_base}/Customer/Edit/` + originalRow?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -72,95 +71,98 @@ function CustomerComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorFn: (originalRow) => originalRow?.counter || '--',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
-      name: 'Name',
-      selector: (row) => row.name,
-      sortable: true,
-      width: '150px'
-    },
-    { name: 'Type', selector: (row) => row.type_name, sortable: true },
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      ),
-      sortable: true
+      accessorFn: (originalRow) => originalRow?.name || '--',
+      header: 'Customer Name',
+      size: 220,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.customer_type || '--',
+      header: 'Type',
+      size: 160
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      header: 'Status',
+      size: 150,
+
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at),
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 190
+    },
+    {
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
   useEffect(() => {
     dispatch(getCustomerData());
+  }, []);
 
+  useEffect(() => {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-    if (location && location.state) {
-      setNotify(location.state);
-    }
-    return () => {
-      setNotify(null);
-    };
-  }, [checkRole.length, dispatch, location]);
+  }, [checkRole.length]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
-  useEffect(() => {
-    setFilteredData(getAllCustomerData);
-  }, [getAllCustomerData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [handleSearch, searchTerm]);
-
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Customer Master"
         renderRight={() => {
@@ -182,37 +184,15 @@ function CustomerComponent() {
         }}
       />
 
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by customer name...."
-        exportFileName="customer Master Record"
-        exportData={exportCustomerData}
-        showExportButton={true}
-      />
-
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {getAllCustomerData && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  fileName="ABC"
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {getAllCustomerData && (
+          <MaterialTable
+            exportDataKeys={exportDataKeys}
+            columns={columns}
+            data={getAllCustomerData}
+            isLoading={isLoading}
+          />
+        )}
       </div>
     </div>
   );
@@ -223,20 +203,22 @@ function CustomerDropdown(props) {
   useEffect(() => {
     const tempData = [];
 
-    new CustomerService().getCustomer().then((res) => {
-      if (res.status === 200) {
-        var data = res?.data?.data;
-
-        // var data = data.filter((d) => d.is_active === 1);
-        for (const key in data) {
-          tempData.push({
-            id: data[key].id,
-            name: data[key].name
-          });
+    new CustomerService()
+      .getCustomer()
+      .then((res) => {
+        if (res?.status === 200) {
+          var data = res?.data?.data;
+          // var data = data.filter((d) => d.is_active === 1);
+          for (const key in data) {
+            tempData.push({
+              id: data[key].id,
+              name: data[key].name
+            });
+          }
         }
-      }
-      setData(tempData);
-    });
+        setData(tempData);
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

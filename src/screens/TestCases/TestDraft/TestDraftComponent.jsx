@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { Modal } from 'react-bootstrap';
+import { useLocation, useParams } from 'react-router-dom';
+import { Modal, PageItem } from 'react-bootstrap';
 import { Astrick } from '../../../components/Utilities/Style';
 import DownloadFormatFileModal from './DownloadFormatFileModal';
 import ReviewedTestDraftDetails from './ReviewedTestDraftDetails';
@@ -20,26 +20,37 @@ import {
   importTestDraftThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
+import { Icon, Tab, Tabs } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PreviewIcon from '@mui/icons-material/Preview';
 export default function TestDraftComponent({}) {
   const location = useLocation();
   const dispatch = useDispatch();
   const {
     allDraftTestListData,
+    getDraftTestListData,
     allReviewDraftTestListData,
     filterData,
-    filterReviewedDraftTestList
+    filterReviewedDraftTestList,
+    projectId
   } = useSelector((state) => state?.downloadFormat);
+
   const [currentTab, setCurrentTab] = useState(
     location.state ?? 'test_summary'
   );
   const [state, setState] = useState(location.state);
+  const { ticketId, taskId } = useParams();
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
 
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  });
 
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
@@ -56,15 +67,20 @@ export default function TestDraftComponent({}) {
   const [clearData, setClearData] = useState(false);
   const handleResetLocationState = () => {
     setState(null);
-    sessionStorage.removeItem('locationState');
+    localStorage.removeItem('locationState');
   };
 
   const tabsLabel = [
     {
       label: 'Test summary',
-      value: 'test_summary'
+      value: 'test_summary',
+      Icon: <DescriptionIcon />
     },
-    { label: 'Review Test Draft', value: 'review_test_draft' }
+    {
+      label: 'Review Test Draft',
+      value: 'review_test_draft',
+      Icon: <PreviewIcon />
+    }
   ];
 
   const handleDownloadModal = (data) => {
@@ -89,6 +105,10 @@ export default function TestDraftComponent({}) {
     }
 
     const formData = new FormData();
+    formData.append('ticket_id', ticketId);
+
+    formData.append('task_id', taskId);
+
     formData.append('file_attachment', file);
     dispatch(
       importTestDraftThunk({
@@ -99,6 +119,8 @@ export default function TestDraftComponent({}) {
 
           dispatch(
             getDraftTestCaseList({
+              ticketId,
+              taskId,
               limit: paginationData.rowPerPage,
               page: paginationData.currentPage
             })
@@ -106,46 +128,111 @@ export default function TestDraftComponent({}) {
         },
         onErrorHandler: () => {
           setBulkModal({ showModal: false });
+          dispatch(
+            getDraftTestCaseList({
+              ticketId,
+              taskId,
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
         }
       })
     );
   };
 
-  const exportColumns = [
-    { title: 'Module', field: 'module_name' },
-    { title: 'Submodule', field: 'sub_module_name' },
-    { title: 'Platform', field: 'platform' },
-    { title: 'Function', field: 'function_name' },
-    { title: 'Field', field: 'field' },
-    { title: 'Testing Type', field: 'type_name' },
-    { title: 'Testing Group', field: 'group_name' },
-    { title: 'Test ID', field: 'tc_id' },
-    { title: 'Test Description', field: 'test_description' },
-    { title: 'Severity', field: 'severity' },
+  const transformDataForDraft = (data) => {
+    return (
+      data?.length > 0 &&
+      data?.map((originalRows) => ({
+        Module: originalRows?.module?.module_name,
+        Submodule: originalRows?.sub_module?.sub_module_name,
+        Platform: originalRows?.platform || '-',
+        Function: originalRows?.function_master?.function_name || '-',
+        Field: originalRows?.field,
+        'Testing Type': originalRows?.testing_type?.type_name || '-',
+        'Testing Group': originalRows?.testing_group || '-',
+        'Test ID': originalRows?.tc_id || '-',
+        'Test Description': originalRows?.test_description || '-',
+        Severity: originalRows?.severity || '-',
+        Steps: originalRows?.steps || '-',
+        'Expected Result': originalRows?.expected_result || '-',
+        Status: originalRows?.tai_bc_status_conventions?.convention_name || '-',
+        Project: originalRows?.project?.project_name || '-',
+        'is Automation': originalRows?.is_automation_script || '-',
+        'Created At': originalRows?.created_at || '-',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+          originalRows?.created_by?.last_name || '-'
+        }`,
+        'Updated At': originalRows?.updated_at || '-',
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+          originalRows?.updated_by?.last_name || '-'
+        }`
+      }))
+    );
+  };
 
-    { title: 'Steps', field: 'steps' },
-    { title: 'Expected Result', field: 'expected_result' },
-    { title: 'Status', field: 'status' },
-    { title: 'Project', field: 'project_name' },
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
+  const transformDataForReviewer = (data) => {
+    return (
+      data?.data?.length > 0 &&
+      data?.data?.map((originalRows) => ({
+        'Test Plan ID': originalRows?.test_plan_id || '-',
+        'Reviewer Name': `${originalRows.reviewer_name?.first_name || '-'} ${
+          originalRows.reviewer_name?.last_name || '-'
+        } `,
+        'Total Testcase': originalRows?.total_testcases,
+        'Reviewed Testcase': originalRows?.total_reviewed_testcases,
+        'Rejected Testcase': originalRows?.total_rejected_testcases,
+        'Approved Testcase': originalRows?.total_approved_testcase,
+        'is Automation': originalRows?.is_automation_script || '-',
+        'Created At': originalRows?.created_at || '-',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+          originalRows?.created_by?.last_name || '-'
+        }`,
+        'Updated At': originalRows?.updated_at || '-',
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+          originalRows?.updated_by?.last_name || '-'
+        }`
+      }))
+    );
+  };
+
+  const exportColumns = [
+    { title: 'Module', field: 'Module' },
+    { title: 'Submodule', field: 'Submodule' },
+    { title: 'Platform', field: 'Platform' },
+    { title: 'Function', field: 'Function' },
+    { title: 'Field', field: 'Field' },
+    { title: 'Testing Type', field: 'Testing Type' },
+    { title: 'Testing Group', field: 'Testing Group' },
+    { title: 'Test ID', field: 'Test ID' },
+    { title: 'Test Description', field: 'Test Description' },
+    { title: 'Severity', field: 'Severity' },
+
+    { title: 'Steps', field: 'Steps' },
+    { title: 'Expected Result', field: 'Expected Result' },
+    { title: 'Status', field: 'Status' },
+    { title: 'Project', field: 'Project' },
+    { title: 'is Automation', field: 'is Automation' },
+    { title: 'Created At', field: 'Created At' },
+    { title: 'Created By', field: 'Created By' },
+    { title: 'Updated At', field: 'Updated At' },
+    { title: 'Updated By', field: 'Updated By' }
   ];
 
   const exportReviewedColumns = [
-    { title: 'Test Plan ID', field: 'test_plan_id' },
-    { title: 'Reviewer Name', field: 'reviewer_name' },
-    { title: 'Total Testcase', field: 'total_testcases' },
-    { title: 'Reviewed Testcase', field: 'total_reviewed_testcases' },
-    { title: 'Rejected Testcase', field: 'total_rejected_testcases' },
-    { title: 'Approved Testcse', field: 'total_approved_testcases' },
+    { title: 'Test Plan ID', field: 'Test Plan ID' },
+    { title: 'Reviewer Name', field: 'Reviewer Name' },
+    { title: 'Total Testcase', field: 'Total Testcase' },
+    { title: 'Reviewed Testcase', field: 'Reviewed Testcase' },
+    { title: 'Rejected Testcase', field: 'Rejected Testcase' },
+    { title: 'Approved Testcase', field: 'Approved Testcase' },
+    { title: 'is Automation', field: 'is Automation' },
+    { title: 'Created At', field: 'Created At' },
+    { title: 'Created By', field: 'Created By' },
 
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
-
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
+    { title: 'Updated At', field: 'Updated At' },
+    { title: 'Updated By', field: 'Updated By' }
   ];
   const [isFilterApplied, setIsFilterApplied] = useState(false);
 
@@ -154,13 +241,19 @@ export default function TestDraftComponent({}) {
 
     setIsFilterApplied(false);
 
+    // setPaginationData({
+    //   rowPerPage: 10,
+    //   currentPage: 1
+    // });
     setPaginationData({
-      rowPerPage: 10,
-      currentPage: 1
+      pageSize: 10,
+      pageIndex: 0
     });
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
+            ticketId,
+            taskId,
             limit: 10,
             page: 1,
             filter_testcase_data: []
@@ -168,6 +261,8 @@ export default function TestDraftComponent({}) {
         )
       : dispatch(
           getAllReviewTestDraftList({
+            ticketId,
+            taskId,
             limit: paginationData.rowPerPage,
             page: paginationData.currentPage,
             filter_testcase_data: []
@@ -189,10 +284,10 @@ export default function TestDraftComponent({}) {
   }, []);
 
   useEffect(() => {
-    const savedState = sessionStorage.getItem('locationState');
+    const savedState = localStorage.getItem('locationState');
     if (savedState) {
       setState(JSON.parse(savedState));
-      sessionStorage.removeItem('locationState');
+      localStorage.removeItem('locationState');
       window.history.replaceState(
         null,
         '',
@@ -203,7 +298,7 @@ export default function TestDraftComponent({}) {
 
   useEffect(() => {
     if (location.state) {
-      sessionStorage.setItem('locationState', JSON.stringify(location.state));
+      localStorage.setItem('locationState', JSON.stringify(location.state));
     }
 
     const handleBeforeUnload = (event) => {
@@ -217,6 +312,13 @@ export default function TestDraftComponent({}) {
     };
   }, [location.state]);
 
+  const handleChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
+  const tabStyles = {
+    '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
+    '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
+  };
   return (
     <div className="container-xxl">
       <PageHeader
@@ -269,7 +371,8 @@ export default function TestDraftComponent({}) {
               {currentTab === 'test_summary' && (
                 <ExportToExcel
                   className="btn btn-danger"
-                  apiData={allDraftTestListData}
+                  // apiData={transformDataForDraft(allDraftTestListData)}
+                  apiData={transformDataForDraft(getDraftTestListData)}
                   columns={exportColumns}
                   fileName={'Test Summary Records'}
                   disabled={allDraftTestListData?.length <= 0 ? true : false}
@@ -279,7 +382,7 @@ export default function TestDraftComponent({}) {
               {currentTab === 'review_test_draft' && (
                 <ExportToExcel
                   className="btn btn-danger"
-                  apiData={allReviewDraftTestListData}
+                  apiData={transformDataForReviewer(allReviewDraftTestListData)}
                   columns={exportReviewedColumns}
                   fileName={'Review Test Draft Records'}
                   disabled={
@@ -293,11 +396,21 @@ export default function TestDraftComponent({}) {
       />
 
       <div className="mt-3">
-        <CustomTab
+        <Tabs sx={tabStyles} value={currentTab} onChange={handleChange}>
+          {tabsLabel.map((tab) => (
+            <Tab
+              icon={tab.Icon}
+              key={tab.value}
+              label={tab.label}
+              value={tab.value}
+            />
+          ))}
+        </Tabs>
+        {/* <CustomTab
           tabsData={tabsLabel}
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
-        />
+        /> */}
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
         <TestDraftDetails
@@ -326,6 +439,9 @@ export default function TestDraftComponent({}) {
         <DownloadFormatFileModal
           show={downloadmodal}
           close={() => setDownloadModal(false)}
+          ticketId={ticketId}
+          taskId={taskId}
+          projectId={projectId}
         />
       )}
 
@@ -364,7 +480,7 @@ export default function TestDraftComponent({}) {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <button
+            {/* <button
               type="submit"
               className="btn btn-primary text-white"
               style={{ backgroundColor: '#484C7F' }}
@@ -378,7 +494,34 @@ export default function TestDraftComponent({}) {
               }}
             >
               Submit
+            </button> */}
+            <button
+              type="submit"
+              className="btn btn-primary text-white"
+              style={{ backgroundColor: '#484C7F' }}
+              disabled={disable}
+              onClick={() => {
+                handleBulkModal({
+                  showModal: true,
+                  modalData: '',
+                  modalHeader: 'Bulk Upload Test Draft'
+                });
+              }}
+            >
+              {disable ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Submitting...
+                </>
+              ) : (
+                'Submit'
+              )}
             </button>
+
             <button
               type="button"
               className="btn btn-danger text-white"

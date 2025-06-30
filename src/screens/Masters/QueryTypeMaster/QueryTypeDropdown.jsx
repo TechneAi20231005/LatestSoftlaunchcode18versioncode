@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
 import Select from 'react-select';
 import 'react-select-plus/dist/react-select-plus.css';
+import { errorHandler } from '../../../utils';
 
 export default class QueryTypeDropdown extends Component {
   constructor(props) {
@@ -18,40 +19,45 @@ export default class QueryTypeDropdown extends Component {
   }
 
   async getData() {
-    new QueryTypeService().getQueryType().then((res) => {
-      const data = [];
-      const defaultValue = [{ value: '', label: 'Select' }];
+    new QueryTypeService()
+      .getQueryType()
+      .then((res) => {
+        const data = [];
+        const defaultValue = [{ value: '', label: 'Select' }];
 
-      if (res.status === 200) {
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            value: temp[key].id.toString(),
-            label: temp[key].query_type_name
-          });
+        if (res.status === 200) {
+          const temp = res.data.data;
+          for (const key in temp) {
+            data.push({
+              value: temp[key].id.toString(),
+              label: temp[key].query_type_name
+            });
 
-          if (this.props.defaultValue && this.props.defaultValue != '') {
-            if (Array.isArray(this.props.defaultValue)) {
-              if (this.props.defaultValue.includes(temp[key].id.toString())) {
-                defaultValue.push({
-                  value: temp[key].id.toString(),
-                  label: temp[key].query_type_name
-                });
-              }
-            } else {
-              if (this.props.defaultValue == temp[key].id) {
-                defaultValue.push({
-                  value: temp[key].id.toString(),
-                  label: temp[key].query_type_name
-                });
+            if (this.props.defaultValue && this.props.defaultValue != '') {
+              if (Array.isArray(this.props.defaultValue)) {
+                if (this.props.defaultValue.includes(temp[key].id.toString())) {
+                  defaultValue.push({
+                    value: temp[key].id.toString(),
+                    label: temp[key].query_type_name
+                  });
+                }
+              } else {
+                if (this.props.defaultValue == temp[key].id) {
+                  defaultValue.push({
+                    value: temp[key].id.toString(),
+                    label: temp[key].query_type_name
+                  });
+                }
               }
             }
           }
+          this.setState({ defaultValue: defaultValue });
+          this.setState({ data: data });
         }
-        this.setState({ defaultValue: defaultValue });
-        this.setState({ data: data });
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }
 
   render() {
@@ -60,6 +66,7 @@ export default class QueryTypeDropdown extends Component {
         <>
           <span style={{ display: 'none' }}></span>
           <Select
+            classNamePrefix="react-select"
             defaultValue={this.state.defaultValue}
             options={this.state.data}
             id={this.props.id}
@@ -75,6 +82,7 @@ export default class QueryTypeDropdown extends Component {
       return (
         <>
           <Select
+            classNamePrefix="react-select"
             options={this.state.data}
             id={this.props.id}
             name={this.props.name}

@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   addBranchMasterThunk,
   editBranchMasterThunk,
-  getBranchMasterListThunk,
+  getBranchMasterListThunk
 } from '../../../../services/hrms/employeeJoining/branchMaster';
 
 const initialState = {
@@ -10,10 +10,18 @@ const initialState = {
   isLoading: {
     getBranchMasterList: false,
     addBranchMaster: false,
-    editBranchMaster: false,
+    editBranchMaster: false
   },
-  errorMsg: { getBranchMasterList: '', addBranchMaster: '', editBranchMaster: '' },
-  successMsg: { getBranchMasterList: '', addBranchMaster: '', editBranchMaster: '' },
+  errorMsg: {
+    getBranchMasterList: '',
+    addBranchMaster: '',
+    editBranchMaster: ''
+  },
+  successMsg: {
+    getBranchMasterList: '',
+    addBranchMaster: '',
+    editBranchMaster: ''
+  }
 };
 const branchMasterSlice = createSlice({
   name: 'Branch master',
@@ -28,7 +36,13 @@ const branchMasterSlice = createSlice({
       })
       .addCase(getBranchMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getBranchMasterList = false;
-        state.branchMasterList = action.payload.data;
+        let updatdData = action?.payload?.data?.map((item, index) => {
+          return {
+            ...item,
+            counter: index + 1
+          };
+        });
+        state.branchMasterList = updatdData;
         state.successMsg.getBranchMasterList = action.payload.msg;
       })
       .addCase(getBranchMasterListThunk.rejected, (state, action) => {
@@ -62,7 +76,7 @@ const branchMasterSlice = createSlice({
         state.isLoading.editBranchMaster = false;
         state.errorMsg.editBranchMaster = action.error.message;
       });
-  },
+  }
 });
 
 export default branchMasterSlice.reducer;

@@ -7,7 +7,6 @@ import ErrorLogService from '../../../services/ErrorLogService';
 import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
 import PageHeader from '../../../components/Common/PageHeader';
 
-import Alert from '../../../components/Common/Alert';
 import * as Validation from '../../../components/Utilities/Validation';
 
 import 'react-data-table-component-extensions/dist/index.css';
@@ -15,6 +14,8 @@ import { Astrick } from '../../../components/Utilities/Style';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 export default function CreateDropdownComponent() {
   const history = useNavigate();
@@ -22,7 +23,9 @@ export default function CreateDropdownComponent() {
   const [data, setData] = useState([{ label: null, value: null }]);
 
   const [notify, setNotify] = useState(null);
-
+  const [message, setMessage] = useState('');
+  const [display, setDisplay] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch();
 
   const checkRole = useSelector((DashbordSlice) =>
@@ -31,46 +34,45 @@ export default function CreateDropdownComponent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    if (!message?.trim()) {
+      setDisplay('Dropdown Name is Required');
+      setSubmitting(false);
+      return;
+    } else {
+      setDisplay(''); // Clear error
+      console.log('Form Submitted with Dropdown Name:', message);
+    }
     const formData = new FormData(e.target);
-
-    await new DynamicFormDropdownMasterService()
-      .createDropdown(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/DynamicFormDropdown`
-              },
-              {
-                state: {
-                  alert: { type: 'success', message: res.data.message }
-                }
+    setSubmitting(true);
+    try {
+      const res = await new DynamicFormDropdownMasterService().createDropdown(
+        formData
+      );
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
+              pathname: `/${_base}/DynamicFormDropdown`
+            },
+            {
+              state: {
+                alert: toast.success(res.data.message)
               }
-            );
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
-        } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'User',
-            'Create_User',
-            'INSERT',
-            res.message
+            }
           );
+        } else {
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Status',
-          'Get_Status',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleAddRow = () => {
@@ -93,13 +95,12 @@ export default function CreateDropdownComponent() {
   }, [checkRole.length, dispatch]);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Create Dropdown" />
 
       <div className="card mt-2">
@@ -121,10 +122,17 @@ export default function CreateDropdownComponent() {
                     onKeyPress={(e) => {
                       Validation.CharactersNumbersOnly(e);
                     }}
+                    maxLength={100}
+                    // minLength={3}
                     name="dropdown_name"
                     id="dropdown_name"
-                    required
+                    // required
+                    onChange={(e) => {
+                      setMessage(e?.target?.value);
+                      setDisplay(false);
+                    }}
                   />
+                  {display && <div className="text-danger mt-1">{display}</div>}
                 </div>
               </div>
 
@@ -151,9 +159,10 @@ export default function CreateDropdownComponent() {
                               type="text"
                               key={idx}
                               name="dropdown_values[]"
-                              required
+                              required={message?.trim()}
                               id={`dropdown_values_${idx}`}
                               className="form-control form-control-sm"
+                              maxlength="100"
                               onKeyPress={(e) => {
                                 Validation.CharactersNumbersSpeicalOnly(e);
                               }}

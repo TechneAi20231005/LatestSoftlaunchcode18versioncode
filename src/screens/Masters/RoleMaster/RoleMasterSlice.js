@@ -6,6 +6,7 @@ import {
   postRole,
   updatedRole
 } from './RoleMasterAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -57,8 +58,8 @@ export const rolemasterSlice = createSlice({
       state.isLoading.RoleList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getRoleData = payload?.data?.data;
-        let filterRoleData = payload?.data?.data
+        let getRoleData = payload?.data?.data?.data;
+        let filterRoleData = payload?.data?.data?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.role }));
 
@@ -110,13 +111,11 @@ export const rolemasterSlice = createSlice({
 
         state.postRole = postRole;
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postRole.rejected, (state) => {
@@ -141,13 +140,13 @@ export const rolemasterSlice = createSlice({
 
         state.status = 'succeded';
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.showLoaderModal = false;
         state.updatedRole = updatedRole;
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updatedRole.rejected, (state) => {
@@ -194,7 +193,7 @@ export const rolemasterSlice = createSlice({
       state.isLoading.RoleList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let postMenuData = payload.data.data;
@@ -202,7 +201,7 @@ export const rolemasterSlice = createSlice({
         state.showLoaderModal = false;
         state.postMenuData = postMenuData;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postMenuData.rejected, (state) => {

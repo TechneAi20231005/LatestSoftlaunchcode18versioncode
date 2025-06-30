@@ -4,7 +4,12 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Select from 'react-select';
 
 // // staic import
-import { _base, userSessionData } from '../../settings/constants';
+import {
+  _base,
+  userSessionData,
+  _attachmentUrl,
+  _rewampAttachmentUrl
+} from '../../settings/constants';
 import Alert from './Alert';
 import UserService from '../../services/MastersService/UserService';
 import {
@@ -16,10 +21,16 @@ import TenantService from '../../services/MastersService/TenantService';
 import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
 import DemoProfileImg from '../../assets/images/profile_av.png';
 import './style.scss';
+import { errorHandler } from '../../utils';
+import NotificationSystem from '../../screens/NotificationBot/NotificationSystem';
+import { useDispatch } from 'react-redux';
+import { reviewerNotificationList } from '../../redux/services/chatBot';
+import { project_id } from '../../settings/constants';
 
 export default function Header() {
   // // initial state
   const userId = userSessionData.userId;
+  const dispatch = useDispatch();
 
   // // local state
   const [tenantId, setTenantId] = useState();
@@ -32,22 +43,26 @@ export default function Header() {
 
   // // all handler
   const loadNotifcation = () => {
-    getNotification().then((res) => {
-      if (res.status === 200) {
-        setNotifications([]);
+    getNotification()
+      .then((res) => {
+        if (res.status === 200) {
+          setNotifications([]);
 
-        if (res.data.data !== null) {
-          if (res?.data?.data?.result) {
-            var length = res.data.data.result.length;
-            var height = 0;
-            setNotifications(res.data.data.result);
+          if (res.data.data !== null) {
+            if (res?.data?.data?.result) {
+              var length = res.data.data.result.length;
+              var height = 0;
+              setNotifications(res.data.data.result);
 
-            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              }
             }
           }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleReadNotification = (e, id) => {
@@ -58,8 +73,9 @@ export default function Header() {
 
   function handleLogout() {
     localStorage.clear();
-    localStorage.clear();
-    window.location.href = `${process.env.PUBLIC_URL}/`;
+    // localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = `/${process.env.REACT_APP_ROOT_URL}/`;
   }
 
   const handleMarkAllNotification = (e) => {
@@ -72,7 +88,7 @@ export default function Header() {
     new UserService().getUserById(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setTenantId(res.data.data.tenant_id);
+          setTenantId(res.data.data.data.tenant_id);
           res.data.data.profile_picture =
             'http://3.108.206.34/TSNewBackend/' + res.data.data.profile_picture;
           setData(res.data.data);
@@ -81,7 +97,7 @@ export default function Header() {
     });
     new TenantService().getTenant().then((res) => {
       if (res.status === 200 && res.data.status === 1) {
-        const temp = res.data.data.filter((d) => d.is_active == 1);
+        const temp = res.data.data?.data?.filter((d) => d.is_active == 1);
         setTenantDropdown(
           temp.map((d) => ({ value: d.id, label: d.company_name }))
         );
@@ -99,6 +115,9 @@ export default function Header() {
             setShowDropdown(false);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
   };
 
@@ -108,7 +127,7 @@ export default function Header() {
       if (res.status === 200 && res.data.status === 1) {
         setNotify({ type: 'success', message: res.data.message });
         setTimeout(() => {
-          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+          window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
         }, 1000);
       } else {
         setNotify({ type: 'danger', message: res.data.message });
@@ -119,6 +138,7 @@ export default function Header() {
   // // life cycle
   useEffect(() => {
     loadData();
+    dispatch(reviewerNotificationList({ project_id: project_id }));
     const interval = setInterval(loadNotifcation(), 5000);
     return () => clearInterval(interval);
   }, []);
@@ -146,9 +166,16 @@ export default function Header() {
             <i className="fa fa-bars" />
           </button>
 
-          <div className="d-flex gap-2 align-items-center">
+          <div className="d-flex gap-3 align-items-center">
+            <NotificationSystem
+              loadNotifcation={loadNotifcation}
+              setNotifications={setNotifications}
+              notifications={notifications}
+              handleReadNotification={handleReadNotification}
+              handleMarkAllNotification={handleMarkAllNotification}
+            />
             {/* notification and modal */}
-            <Dropdown
+            {/* <Dropdown
               className="notifications"
               onClick={() => {
                 loadNotifcation();
@@ -236,12 +263,11 @@ export default function Header() {
                   </div>
                 </div>
               </Dropdown.Menu>
-            </Dropdown>
+            </Dropdown> */}
 
-            {/* profile and modal */}
             <Dropdown
               className="dropdown-animation dropdown d-flex align-items-center"
-              style={{ zIndex: 200 }}
+              style={{ zIndex: 100 }}
             >
               <p className="mb-0 text-end line-height-sm fw-bolder me-2 d-none d-sm-block">
                 {`${localStorage.getItem('first_name')} ${localStorage.getItem(
@@ -253,11 +279,19 @@ export default function Header() {
                 className="nav-link dropdown-toggle pulse p-0"
               >
                 <img
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = DemoProfileImg;
+                  }}
                   className="avatar lg rounded-circle img-thumbnail"
-                  src={data?.profile_picture || DemoProfileImg}
+                  src={
+                    _rewampAttachmentUrl + data?.data?.profile_picture ||
+                    DemoProfileImg
+                  }
                   alt="profile"
                 />
               </Dropdown.Toggle>
+
               <Dropdown.Menu className="shadow border-0 dropdown-animation mt-5">
                 <div className="card border-0 w280">
                   <div className="card-body pb-0">
@@ -272,13 +306,21 @@ export default function Header() {
                         defaultValue={tenantDropdown.filter(
                           (d) => d.value == tenantId
                         )}
+                        classNamePrefix="react-select"
                         className="mb-2"
                       />
                     )}
                     <div className="d-flex gap-2">
                       <img
                         className="avatar rounded-circle"
-                        src={data?.profile_picture}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = DemoProfileImg;
+                        }}
+                        src={
+                          data &&
+                          _rewampAttachmentUrl + data?.data?.profile_picture
+                        }
                         alt="profile"
                       />
                       <div className="flex-fill">

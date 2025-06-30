@@ -43,7 +43,13 @@ const reviewCommentMasterSlice = createSlice({
       })
       .addCase(getReviewCommentMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getReviewCommentMasterList = false;
-        state.reviewCommentMasterList = action?.payload?.data;
+        let updatdData = action?.payload?.data?.map((item, index) => {
+          return {
+            ...item,
+            counter: index + 1
+          };
+        });
+        state.reviewCommentMasterList = updatdData;
         state.getFilterReviewCommentMasterList = action?.payload?.data
           ?.filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.reviewer_comment }));

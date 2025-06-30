@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import moment from 'moment';
 import DataTable from 'react-data-table-component';
 import ErrorLogService from '../../services/ErrorLogService';
 import UserService from '../../services/MastersService/UserService';
@@ -11,6 +12,9 @@ import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
+import NotFound from '../../components/NotFound';
 
 function UserTaskReportComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -20,7 +24,7 @@ function UserTaskReportComponent() {
   );
 
   const [userData, setUserData] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
 
   const [exportData, setExportData] = useState(null);
 
@@ -43,8 +47,15 @@ function UserTaskReportComponent() {
     { name: 'Task Name', selector: (row) => row.task_name, sortable: true },
     { name: 'User Name', selector: (row) => row.user_name, sortable: true },
     {
-      name: 'Total Worked',
+      name: 'Total Worked Hours',
       selector: (row) => row.total_worked,
+      sortable: true
+    },
+    {
+      name: 'Total Worked Mins',
+      selector: (row) =>
+        Math.floor(moment.duration(row.total_worked, 'hours').asMinutes()),
+      width: '150px',
       sortable: true
     },
     { name: 'Status', selector: (row) => row.status, sortable: true },
@@ -59,7 +70,7 @@ function UserTaskReportComponent() {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter(
+        const data = res.data.data?.data?.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
@@ -79,6 +90,7 @@ function UserTaskReportComponent() {
         });
         setUserData(aa);
       }
+      setShowLoaderModal(false);
     });
 
     dispatch(getRoles);
@@ -107,13 +119,22 @@ function UserTaskReportComponent() {
     setFromdateformat(setfromformatdate);
   };
 
-  const handleForm = async (e) => {
-    e.preventDefault();
+  const handleForm = async (values) => {
+    // e.preventDefault();
     setShowLoaderModal(true);
 
-    const formData = new FormData(e.target);
+    // const formData = new FormData(e.target);
+
+    const formData = new FormData();
+    formData.append('from_date', values.from_date);
+    formData.append('to_date', values.to_date);
+    values?.user_id?.forEach((item) => {
+      formData?.append('user_id[]', item?.value);
+    });
+    formData.append('task_name', values.task_name);
 
     if (todateformat > fromdateformat) {
+      setShowLoaderModal(false);
       alert('Please select Date After From date');
     } else {
       await new ReportService()
@@ -134,11 +155,14 @@ function UserTaskReportComponent() {
                 task_name: temp[key].task_name,
                 user_name: temp[key].employee_name,
                 total_worked: temp[key].total_worked,
+                total_worked_minutes: Math.floor(
+                  moment.duration(temp[key].total_worked, 'hours').asMinutes()
+                ),
                 status: temp[key].status,
                 updated_at: temp[key].updated_at
               });
             }
-            setData(null);
+            setData([]);
             setData(tempData);
             let count = 1;
             for (const key in temp) {
@@ -148,6 +172,9 @@ function UserTaskReportComponent() {
                 task_name: temp[key].task_name,
                 user_name: temp[key].employee_name,
                 total_worked: temp[key].total_worked,
+                total_worked_minutes: Math.floor(
+                  moment.duration(temp[key].total_worked, 'hours').asMinutes()
+                ),
                 status: temp[key].status,
                 updated_at: temp[key].updated_at
               });
@@ -155,6 +182,7 @@ function UserTaskReportComponent() {
             setExportData(null);
             setExportData(exportTempData);
           } else {
+            setData([]);
             new ErrorLogService().sendErrorLog(
               'UserTask',
               'Get_UserTask',
@@ -173,6 +201,7 @@ function UserTaskReportComponent() {
             errorObject.data.message
           );
         });
+      setShowLoaderModal(false);
     }
   };
 
@@ -190,9 +219,50 @@ function UserTaskReportComponent() {
     if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+  const fields = [
+    {
+      name: 'from_date',
+      label: 'From Date',
+      required: false,
+      alphaNumeric: false,
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
+    },
+    {
+      name: 'to_date',
+      label: 'To Date',
+      required: false,
+      alphaNumeric: false,
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
+    },
+    {
+      name: 'task_name',
+      label: 'Task Name',
+      required: false,
+      alphaNumeric: true,
+      max: 100
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
+  const initialValues = {
+    user_id: [],
+    from_date: '',
+    to_date: '',
+    task_name: ''
+  };
 
   return (
     <div className="container-xxl">
@@ -200,99 +270,128 @@ function UserTaskReportComponent() {
 
       <div className="card mt-2" style={{ zIndex: 10 }}>
         <div className="card-body">
-          <form onSubmit={handleForm}>
-            <div className="row">
-              <div className="col-md-3">
-                <label>
-                  <b>Select User :</b>
-                </label>
-                <Select
-                  isMulti
-                  isSearchable={true}
-                  name="user_id[]"
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  options={userData}
-                />
-              </div>
-              <div className="col-md-3">
-                <label>
-                  <b>Search Task :</b>
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  onKeyPress={(e) => {
-                    Validation.CharactersNumbersOnly(e);
-                  }}
-                  onKeyDown={handleKeyDown}
-                  name="task_name"
-                />
-              </div>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              handleForm(values);
+            }}
+          >
+            {({ setFieldValue, values }) => (
+              <Form>
+                <div className="row">
+                  <div className="col-md-3">
+                    <label>
+                      <b>Select User :</b>
+                    </label>
+                    <Select
+                      isMulti
+                      isSearchable={true}
+                      name="user_id"
+                      className="basic-multi-select"
+                      // classNamePrefix="select"
+                      classNamePrefix="react-select"
+                      options={userData}
+                      onChange={(option) =>
+                        setFieldValue('user_id', option || null)
+                      }
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label>
+                      <b>Search Task :</b>
+                    </label>
+                    <Field
+                      type="text"
+                      className="form-control form-control-sm"
+                      onKeyDown={handleKeyDown}
+                      name="task_name"
+                    />
+                    <ErrorMessage
+                      name="task_name"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
 
-              <div className="col-md-3">
-                <label>
-                  <b>From Date :</b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  name="from_date"
-                  onChange={handleFromDate}
-                />
-              </div>
+                  <div className="col-md-3">
+                    <label>
+                      <b>From Date :</b>
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control form-control-sm"
+                      name="from_date"
+                      onChange={(option) => {
+                        handleFromDate(option);
+                        setFieldValue(
+                          'from_date',
+                          option?.target?.value || null
+                        );
+                      }}
+                    />
+                    <ErrorMessage
+                      name="from_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>To Date :</b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  name="to_date"
-                  onChange={handleToDate}
-                />
-              </div>
+                  <div className="col-md-3">
+                    <label htmlFor="" className="">
+                      <b>To Date :</b>
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control form-control-sm"
+                      name="to_date"
+                      onChange={(option) => {
+                        handleToDate(option);
+                        setFieldValue('to_date', option?.target?.value || null);
+                      }}
+                    />
+                    <ErrorMessage
+                      name="to_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
 
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
-              </div>
-            </div>
-          </form>
-          {data && data.length > 0 && (
-            <div
-              className="col"
-              style={{
-                textAlign: 'right',
-                marginTop: '20px',
-                fontWeight: '600'
-              }}
-            >
-              <ExportToExcel
-                className="btn btn-sm btn-danger"
-                apiData={exportData}
-                fileName="User Task Report"
-              />
-            </div>
-          )}
+                  <div className="d-flex mt-3">
+                    <div className="d-flex  ms-md-auto">
+                      <button
+                        className="btn  btn-warning text-white"
+                        type="submit"
+                        style={{ fontWeight: '600' }}
+                      >
+                        <i className="icofont-search-1 "></i> Search
+                      </button>
+                      <button
+                        className="btn  btn-info text-white"
+                        type="button"
+                        onClick={() => window.location.reload(false)}
+                        style={{ fontWeight: '600' }}
+                      >
+                        <i className="icofont-refresh text-white"></i> Reset
+                      </button>
+                    </div>
+
+                    {exportData && (
+                      <ExportToExcel
+                        className="btn btn-sm btn-danger"
+                        apiData={exportData}
+                        fileName="User Task Report"
+                      />
+                    )}
+                  </div>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
 
-      {data && data.length > 0 && (
+      {data && (
         <div className="card mt-2">
           <div className="card-body">
             <div className="row clearfix g-3">
@@ -302,6 +401,7 @@ function UserTaskReportComponent() {
                   data={data}
                   defaultSortField="title"
                   pagination
+                  noDataComponent={<NotFound topMargin={0} />}
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}

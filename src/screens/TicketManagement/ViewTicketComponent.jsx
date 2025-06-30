@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { userSessionData } from '../../settings/constants';
 import { Spinner, Modal } from 'react-bootstrap';
 
-import { _attachmentUrl } from '../../settings/constants';
+import { _attachmentUrl, _rewampAttachmentUrl } from '../../settings/constants';
 import { getAttachment } from '../../services/OtherService/AttachmentService';
 import MyTicketService from '../../services/TicketService/MyTicketService';
 import ReportService from '../../services/ReportService/ReportService';
@@ -155,12 +155,15 @@ export default function ViewTicketComponent({ match }) {
     if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle={`Ticket - ${data ? data.ticket_id : ''}`} />
+      <PageHeader
+        showBackBtn
+        headerTitle={`Ticket - ${data ? data.ticket_id : ''}`}
+      />
 
       {/* {notify && <Alert alertData={notify} />}   */}
 
@@ -238,7 +241,7 @@ export default function ViewTicketComponent({ match }) {
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row">
-                  {rows.map((data, index) => {
+                  {rows?.map((data, index) => {
                     var range = '';
                     return (
                       <div className={`${data.inputWidth} mt-2`}>
@@ -342,7 +345,7 @@ export default function ViewTicketComponent({ match }) {
                                     }
                                     readOnly
                                     disabled
-                                    checked={d.value === data.inputDefaultValue}
+                                    checked={d.value == data.inputDefaultValue}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="radio"
@@ -367,12 +370,10 @@ export default function ViewTicketComponent({ match }) {
                                         : ''
                                     }
                                     required={
-                                      data.inputMandatory === true
-                                        ? true
-                                        : false
+                                      data.inputMandatory == true ? true : false
                                     }
                                     disabled
-                                    checked={d.value === data.inputDefaultValue}
+                                    checked={d.value == data.inputDefaultValue}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="checkbox"
@@ -545,7 +546,7 @@ export default function ViewTicketComponent({ match }) {
                           </div>
                           <div className="mr-1">
                             <a
-                              href={`${_attachmentUrl}${attachment?.path}`}
+                              href={`${_rewampAttachmentUrl}${attachment?.path}`}
                               target="_blank"
                               download
                               className="btn btn-primary btn-sm"

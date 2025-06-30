@@ -1,0 +1,308 @@
+import { useState, useEffect, useRef } from 'react';
+import './notifications.scss';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Divider } from '@mui/material';
+import { _base } from '../../settings/constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { reviewerNotificationList } from '../../redux/services/chatBot/';
+import MessageIcon from '@mui/icons-material/Message';
+import moment from 'moment/moment';
+import { masterUser } from '../../hooks/masterUser';
+import { project_id } from '../../settings/constants';
+
+const NotificationSystem = ({
+  loadNotifcation,
+  setNotifications,
+  notifications,
+  handleReadNotification,
+  handleMarkAllNotification
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('ticket');
+  const dispatch = useDispatch();
+  const reviewerNotification = useSelector(
+    (state) => state?.chatBotSlice?.reviewerNotificationList || []
+  );
+  const isMasterUser = masterUser();
+
+  const notificationRef = useRef(null);
+  const buttonRef = useRef(null);
+  const totalUnreadCount = 0;
+
+  const toggleNotifications = () => {
+    loadNotifcation();
+    isMasterUser &&
+      dispatch(reviewerNotificationList({ project_id: project_id }));
+    setIsOpen(!isOpen);
+  };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target) &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false);
+      buttonRef.current.focus();
+    }
+  };
+
+  const currentNotifications =
+    activeTab === 'reviewer'
+      ? reviewerNotification?.flagged_entries || []
+      : notifications;
+
+  return (
+    <div className="notification-system">
+      <button
+        ref={buttonRef}
+        style={{ background: '#484c7f' }}
+        className={`notification-button ${
+          notifications?.length > 0 ? 'has-notifications' : ''
+        }`}
+        onClick={toggleNotifications}
+        aria-label={`Notifications ${
+          notifications?.length > 0 ? `(${notifications?.length} unread)` : ''
+        }`}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+      >
+        <div className="bell-icon">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+        {(notifications?.length > 0 ||
+          reviewerNotification?.flagged_entries?.length > 0) && (
+          <span
+            className="notification-badge"
+            aria-label={`${notifications?.length} ticket notifications and ${reviewerNotification?.flagged_entries?.length} reviewer notifications`}
+          >
+            {notifications?.length +
+              (reviewerNotification?.flagged_entries?.length || 0)}
+          </span>
+        )}
+      </button>
+
+      <div
+        ref={notificationRef}
+        className={`notification-panel ${isOpen ? 'open' : ''}`}
+        role="dialog"
+        aria-labelledby="notifications-title"
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
+      >
+        <div className="notification-header">
+          <h3 id="notifications-title">Notifications</h3>
+          <button
+            className="close-button"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close notifications"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="notification-tabs">
+          <button
+            className={`tab-button ${activeTab === 'ticket' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ticket')}
+          >
+            Ticket
+            {notifications?.length >= 0 && (
+              <span className="tab-badge">{notifications?.length}</span>
+            )}
+          </button>
+          {isMasterUser && (
+            <button
+              className={`tab-button ${
+                activeTab === 'reviewer' ? 'active' : ''
+              }`}
+              onClick={() => setActiveTab('reviewer')}
+            >
+              Reviewer
+              {reviewerNotification?.flagged_entries?.length >= 0 && (
+                <span className="tab-badge">
+                  {reviewerNotification?.flagged_entries?.length || '0'}
+                </span>
+              )}
+            </button>
+          )}
+        </div>
+
+        <div className="notification-list">
+          {currentNotifications?.length === 0 ? (
+            <div className="empty-state">
+              <p>No notifications yet</p>
+            </div>
+          ) : (
+            currentNotifications?.map((notification, i) => {
+              const date = notification?.created_at?.split(' ')[0];
+              const time = notification?.created_at?.split(' ')[1];
+              const isValid =
+                notification?.timestamp &&
+                moment(notification?.timestamp).isValid();
+              const timeAgo = moment(notification?.timestamp).fromNow();
+              return (
+                <div
+                  key={notification.id || i}
+                  className={`notification-item ${
+                    !notification.is_read ? 'unread' : ''
+                  } ${activeTab === 'reviewer' ? 'success' : 'ticket'}`}
+                  role="listitem"
+                >
+                  {activeTab === 'reviewer' ? (
+                    <>
+                      <div className="notification-icon">
+                        <MessageIcon fontSize="small" />
+                        {/* {getTypeIcon(notification.type)} */}
+                      </div>
+                      <div
+                        onClick={() => {
+                          navigate(
+                            `${_base}/CustomerFeedback?id=${reviewerNotification?.project_id}&chat_id=${notification?.uuid}`
+                          );
+                          setIsOpen(false);
+                        }}
+                        className="notification-content"
+                      >
+                        <div
+                          title="Project Name"
+                          className="notification-title"
+                        >
+                          {reviewerNotification?.project_name || ''}
+                        </div>
+                        <div title="Question" className="notification-message">
+                          {notification.question || ''}
+                        </div>
+                        <div className="notification-timestamp">
+                          {isValid ? timeAgo : '1 hours ago'}
+                          {/* {formatTimestamp(notification.timestamp)} */}
+                        </div>
+                      </div>
+                      {!notification.is_read && (
+                        <div className="unread-indicator"></div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="notification-icon ticket-icon">🎫</div>
+                      {
+                        notification?.url ? (
+                          <Link to={`/${_base}/${notification?.url}`}>
+                            <div
+                              onClick={(e) => {
+                                handleReadNotification(e, notification?.id);
+                                setIsOpen(false);
+                              }}
+                              className="notification-content"
+                            >
+                              <div className="ticket-info">
+                                <span className="ticket-date">
+                                  Date: {date}
+                                </span>
+                                <span className="ticket-time">
+                                  Time: {time}
+                                </span>
+                              </div>
+                              <div className="notification-message">
+                                <Link to={`/${_base}/${notification?.url}`}>
+                                  {notification?.message}
+                                </Link>
+                              </div>
+                            </div>
+                          </Link>
+                        ) : (
+                          //  <Link to={`/${_base}/${notification?.url}`}>
+                          <div
+                            onClick={(e) => {
+                              handleReadNotification(e, notification?.id);
+                              setIsOpen(false);
+                            }}
+                            className="notification-content"
+                          >
+                            <div className="ticket-info">
+                              <span className="ticket-date">Date: {date}</span>
+                              {/* <span className="ticket-time">Time: {time}</span> */}
+                            </div>
+                            <div className="notification-message">
+                              {notification?.message}
+                            </div>
+                          </div>
+                        )
+                        // </Link>
+                      }
+                      {!notification.is_read && (
+                        <div className="unread-indicator"></div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {currentNotifications?.length > 0 && (
+          <div className="notification-footer">
+            <div className="footer-buttons">
+              <button
+                onClick={() => {
+                  activeTab === 'ticket'
+                    ? navigate(`/${_base}/Notification`)
+                    : navigate(`/${_base}/ReviewerNotificationList`);
+                  setIsOpen(false);
+                }}
+                className="view-all-button"
+              >
+                View All Notifications
+              </button>
+              {activeTab === 'ticket' && (
+                <button
+                  onClick={(e) => {
+                    handleMarkAllNotification(e);
+                  }}
+                  className="mark-all-read"
+                >
+                  Mark All As Read
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {isOpen && (
+        <div
+          className="notification-overlay"
+          onClick={() => setIsOpen(false)}
+        ></div>
+      )}
+    </div>
+  );
+};
+
+export default NotificationSystem;

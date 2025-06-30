@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import RoleService from '../../../services/MastersService/RoleService';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import { errorHandler } from '../../../utils';
 
 export const getRoleData = createAsyncThunk(
   'getRoleData',
@@ -11,7 +12,7 @@ export const getRoleData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );

@@ -1,74 +1,70 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal, Table } from "react-bootstrap";
-import ErrorLogService from "../../../../services/ErrorLogService";
-import Alert from "../../../../components/Common/Alert";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal, Table } from 'react-bootstrap';
 // import { requestRegularizationTime } from "../../../../services/TicketService/TaskService";
-import { taskRequestRegularizationTime } from "../../../../services/TicketService/TaskService";
-import { getRegularizationTime, changeStatusRegularizationTime } from '../../../../services/TicketService/TaskService';
+import { taskRequestRegularizationTime } from '../../../../services/TicketService/TaskService';
+import {
+  getRegularizationTime,
+  changeStatusRegularizationTime
+} from '../../../../services/TicketService/TaskService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../../utils';
 
 const TaskRegularizationModal = (props) => {
-
-  const [notify, setNotify] = useState(null);
   const [inputList, setInputList] = useState([
     {
       // date: "",
-      from_time: "00:00",
-      to_time: "00:00",
+      from_time: '00:00',
+      to_time: '00:00',
       from_date: null,
       to_date: null
-    },
+    }
   ]);
 
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState('');
   const [time, setTime] = useState(null);
 
   const [fromTime, setFromTime] = useState('');
   const [toTime, setToTime] = useState('');
   const [timeDifference, setTimeDifference] = useState('');
-
-
-
+  const [submitting, setSubmitting] = useState(false);
   const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
   const day = String(currentDate.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month}-${day}`;
 
-
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
     const list = [...inputList];
     list[index] = { ...list[index], [name]: value };
 
-    const fromDateList = list.map(item => item[`from_date[${index}]`]);
-    const toDateList = list.map(item => item[`to_date[${index}]`]);
+    const fromDateList = list.map((item) => item[`from_date[${index}]`]);
+    const toDateList = list.map((item) => item[`to_date[${index}]`]);
 
     const payload = {
-      from_date: fromDateList.filter(date => date !== undefined),
-      to_date: toDateList.filter(date => date !== undefined),
+      from_date: fromDateList.filter((date) => date !== undefined),
+      to_date: toDateList.filter((date) => date !== undefined)
       // Add other relevant values from the component state or props
       // Example: fromDate: date,
       //          fromTime: time,
       //          ...
     };
 
-    if (name.includes("from_date")) {
+    if (name.includes('from_date')) {
       setDate(value);
     }
-    if (name.includes("from_time")) {
+    if (name.includes('from_time')) {
       setTime(value);
     }
 
     setInputList(list);
   };
 
-
   const [timeData, setTimeData] = useState({});
   var ticket_id = props.data.ticket_id;
   var ticket_basket_id = props.data.ticket_basket_id;
-  var task_owner_id = localStorage.getItem("id");
+  var task_owner_id = localStorage.getItem('id');
   var ticket_task_id = props.data.id;
-
 
   const [firstCheckboxChecked, setFirstCheckboxChecked] = useState(false);
   const [secondCheckboxChecked, setSecondCheckboxChecked] = useState(false);
@@ -92,21 +88,27 @@ const TaskRegularizationModal = (props) => {
     }
   };
 
-
-
-
-  const [rows, setRows] = useState([{ increaseChecked: false, decreaseChecked: false, value: 0, actual_time: null }]);
+  const [rows, setRows] = useState([
+    {
+      increaseChecked: false,
+      decreaseChecked: false,
+      value: 0,
+      actual_time: null
+    }
+  ]);
   const addRow = () => {
-    setRows(prevRows => [...prevRows, { increaseChecked: false, decreaseChecked: false, value: 0, actual_time: null }]);
+    setRows((prevRows) => [
+      ...prevRows,
+      {
+        increaseChecked: false,
+        decreaseChecked: false,
+        value: 0,
+        actual_time: null
+      }
+    ]);
   };
 
-
-
-
   // Assuming you are using React and have a state variable called 'values'
-
-
-
 
   const calculateTimeDifference = () => {
     // Your existing code for calculating the time difference goes here
@@ -125,7 +127,9 @@ const TaskRegularizationModal = (props) => {
         minutes = 0;
       }
 
-      const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      const formattedTime = `${String(hours).padStart(2, '0')}:${String(
+        minutes
+      ).padStart(2, '0')}`;
 
       setTimeDifference(formattedTime); // Assuming setTimeDifference is a state setter function
 
@@ -152,7 +156,9 @@ const TaskRegularizationModal = (props) => {
           minutes = 0;
         }
 
-        const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        const formattedTime = `${String(hours).padStart(2, '0')}:${String(
+          minutes
+        ).padStart(2, '0')}`;
 
         return formattedTime;
       }
@@ -175,16 +181,13 @@ const TaskRegularizationModal = (props) => {
     });
   };
 
-
-
-
   const handleRowInputChange = (e, rowIndex) => {
     const { name, value, type, checked } = e.target;
     const updatedRows = rows.map((row, index) => {
       if (index === rowIndex) {
-        if (type === "checkbox") {
+        if (type === 'checkbox') {
           return { ...row, [name]: checked };
-        } else if (name === "actual_time[]") {
+        } else if (name === 'actual_time[]') {
           const formattedTime = calculateTimeDifference(value);
           return { ...row, [name]: value, timeDifference: formattedTime };
         } else {
@@ -196,13 +199,8 @@ const TaskRegularizationModal = (props) => {
     });
 
     setRows(updatedRows);
-    setDate(e.target.value)
+    setDate(e.target.value);
   };
-
-
-
-
-
 
   const handleIncreaseChange = (index) => {
     const updatedRows = [...rows];
@@ -224,17 +222,12 @@ const TaskRegularizationModal = (props) => {
     setRows(updatedRows);
   };
 
-
-
-
-
-
   // const handleSubmit = (e) => {
   //   e.preventDefault();
   //   setNotify(null);
   //   const data = new FormData(e.target);
   //   data.append('user_id', localStorage.getItem("id"));
-  //   // data.append('actual_total_time',"00:30");        
+  //   // data.append('actual_total_time',"00:30");
 
   //   new taskRequestRegularizationTime(data).then((res) => {
   //     if (res.status === 200) {
@@ -256,38 +249,36 @@ const TaskRegularizationModal = (props) => {
   const handleSubmit = (e) => {
     // Prevent the default form submission behavior
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
 
     // Clear any existing notifications
-    setNotify(null);
 
     // Create a FormData object from the form element 'e.target'
     const data = new FormData(e.target);
 
     // Append the user_id from localStorage to the form data
-    data.append('user_id', localStorage.getItem("id"));
+    data.append('user_id', localStorage.getItem('id'));
 
     // Create a request for task regularization time using 'data'
-    new taskRequestRegularizationTime(data).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          // If the request was successful, set a success notification
-          setNotify({ type: "success", message: res.data.message });
+    new taskRequestRegularizationTime(data)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            toast.success(res.data.message);
+            // Hide the form (assuming 'props.hide()' does that)
+            props.hide();
 
-          // Hide the form (assuming 'props.hide()' does that)
-          props.hide();
-
-          // Reset the form with id 'requestForm'
-          document.getElementById("requestForm").reset();
-        } else {
-          // If the request was not successful, set an error notification
-          setNotify({ type: "danger", message: res.data.message });
+            // Reset the form with id 'requestForm'
+            document.getElementById('requestForm').reset();
+          } else {
+            toast.error(res.data.message);
+          }
         }
-      }
-    });
-};
-
-
-
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setSubmitting(false));
+  };
 
   // handle click event of the Remove button
   const handleRemoveClick = (index) => {
@@ -297,74 +288,65 @@ const TaskRegularizationModal = (props) => {
   };
 
   // handle click event of the Add button
-  const[remark, setRemark] = useState()
+  const [remark, setRemark] = useState();
   const handleAddClick = (e) => {
-    setRemark(e.target.value)
+    setRemark(e.target.value);
     // setInputList([...inputList, { name: null, id: null }]);
   };
-  const [approveData, setApproveData] = useState()
+  const [approveData, setApproveData] = useState();
 
   const getApproveData = () => {
-
-
-    new getRegularizationTime(props.data.ticket_id).then(res => {
-
-      if (res.data.data) {
-        var temp = [];
-        setApproveData(null);
-        res.data.data.forEach(d => {
-          temp.push({
-            'id': d.id,
-            'created_by_name': d.created_by_name,
-            'from_date': d.from_date,
-            'to_date': d.to_date,
-            'from_time': d.from_time,
-            'to_time': d.to_time,
-            'status': d.status,
-            'remark': d.remark,
-            'is_checked': 0,
-            'regularization_time_status': d.regularization_time_status,
-            'task_name': d.task_name,
-            'ticket_id_name': d.ticket_id_name,
-            'ticket_task_id': d.ticket_task_id
-
+    new getRegularizationTime(props.data.ticket_id)
+      .then((res) => {
+        if (res.data.data) {
+          var temp = [];
+          setApproveData(null);
+          res.data.data.forEach((d) => {
+            temp.push({
+              id: d.id,
+              created_by_name: d.created_by_name,
+              from_date: d.from_date,
+              to_date: d.to_date,
+              from_time: d.from_time,
+              to_time: d.to_time,
+              status: d.status,
+              remark: d.remark,
+              is_checked: 0,
+              regularization_time_status: d.regularization_time_status,
+              task_name: d.task_name,
+              ticket_id_name: d.ticket_id_name,
+              ticket_task_id: d.ticket_task_id
+            });
           });
-        })
-        setApproveData(temp);
-      }
-    })
-
-  }
-
+          setApproveData(temp);
+        }
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setSubmitting(false));
+  };
 
   useEffect(() => {
     calculateTimeDifference();
   }, [fromTime, toTime, rows]);
 
-
-
   useEffect(() => {
     // Code to update the actual_time value automatically
-    const updatedRows = rows.map(row => ({
+    const updatedRows = rows.map((row) => ({
       ...row,
       actual_time: timeDifference
     }));
     setRows(updatedRows);
   }, [timeDifference]);
-const[fromDate, setFromDate] =useState()
-const handleFromDate = (e) => {
-setFromDate(e.target.value)
-}
+  const [fromDate, setFromDate] = useState();
+  const handleFromDate = (e) => {
+    setFromDate(e.target.value);
+  };
   useEffect(() => {
-    setNotify(null);
-    getApproveData()
-
+    getApproveData();
   }, []);
-
 
   return (
     <div>
-      {notify && <Alert alertData={notify} />}
       <Modal
         show={props.show}
         onHide={props.hide}
@@ -372,11 +354,11 @@ setFromDate(e.target.value)
         size="xl"
         aria-labelledby="example-custom-modal-styling-title"
       >
-        <Modal.Header 
-        closeButton
-        >
+        <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
-            <span className="fw-bold" style={{textAlign:'center'}}>Task Regularization</span>
+            <span className="fw-bold" style={{ textAlign: 'center' }}>
+              Task Regularization
+            </span>
           </Modal.Title>
         </Modal.Header>
         <Modal.Header>
@@ -384,9 +366,11 @@ setFromDate(e.target.value)
             <div className="row">
               {/* <div className="col">
                 <h6>Task Name</h6>
-              </div> */}                    
-              <div className="col-md" >
-                <h6 style={{ fontWeight: 'bold', width: '300px' }}>{`Ticket ID: ${props.data.ticket_id_name}`}</h6>
+              </div> */}
+              <div className="col-md">
+                <h6
+                  style={{ fontWeight: 'bold', width: '300px' }}
+                >{`Ticket ID: ${props.data.ticket_id_name}`}</h6>
               </div>
               <div className="col-md ">
                 <h6 style={{ fontWeight: 'bold', width: '580px' }}>{`Task Name:
@@ -394,11 +378,12 @@ setFromDate(e.target.value)
               </div>
 
               <div className="col-md">
-                <h6 style={{ fontWeight: 'bold' }}>{`Scheduled Time: ${props.data.task_hours}`}</h6>
+                <h6
+                  style={{ fontWeight: 'bold' }}
+                >{`Scheduled Time: ${props.data.task_hours}`}</h6>
               </div>
             </div>
           </Modal.Title>
-
         </Modal.Header>
 
         <form onSubmit={handleSubmit} id="requestForm">
@@ -438,7 +423,6 @@ setFromDate(e.target.value)
                     {/* <th className="text-center"> To Time </th> */}
                     <th className="text-center"> Task Hours </th>
 
-
                     {/* <th className="text-center"> Increase Time </th> */}
                     {/* <th className="text-center"> Decrease Time </th> */}
                     <th className="text-center"> Remark </th>
@@ -446,9 +430,6 @@ setFromDate(e.target.value)
                   </tr>
                 </thead>
                 <tbody>
-
-
-
                   {rows.map((row, index) => (
                     <tr key={index}>
                       {/* ... */}
@@ -469,9 +450,13 @@ setFromDate(e.target.value)
                           type="date"
                           className="form-control form-control-sm"
                           name={`from_date[${index}]`}
-                          defaultValue={props.data.from_date ? props.data.from_date : props.data.start_date}
+                          defaultValue={
+                            props.data.from_date
+                              ? props.data.from_date
+                              : props.data.start_date
+                          }
                           // max={props.allData.ticketStartDate}
-                          onChange={(e)=>handleFromDate(e)}
+                          onChange={(e) => handleFromDate(e)}
                           required
                         />
                       </td>
@@ -480,8 +465,11 @@ setFromDate(e.target.value)
                           type="date"
                           className="form-control form-control-sm"
                           name={`to_date[${index}]`}
-
-                          defaultValue={props.data.to_date ? props.data.to_date : props.data.end_date}
+                          defaultValue={
+                            props.data.to_date
+                              ? props.data.to_date
+                              : props.data.end_date
+                          }
                           min={fromDate}
                           // max={props.allData.ticketStartDate}
                           onChange={(e) => handleRowInputChange(e, index)}
@@ -495,31 +483,30 @@ setFromDate(e.target.value)
                           name={`task_hours[${index}]`}
                           required
                           defaultValue={
-                            props.data.task_hours ? props.data.task_hours : "00:00"
-                          }                        />
-
+                            props.data.task_hours
+                              ? props.data.task_hours
+                              : '00:00'
+                          }
+                        />
                       </td>
-                     
-                      <td >
+
+                      <td>
                         <input
-                        title={remark && remark ?remark : ""}
+                          title={remark && remark ? remark : ''}
                           type="text"
                           className="form-control form-control-sm"
                           name="remark[]"
-                          onChange={e=> handleAddClick(e)}
+                          onChange={(e) => handleAddClick(e)}
                           defaultValue={props.data.remark}
                           required
-
                         />
                       </td>
                       <td>
-
                         {index + 1 == 1 && (
                           <button
                             onClick={addRow}
                             className="btn btn-primary"
-                            style={{ backgroundColor: "#484C7F" }}
-
+                            style={{ backgroundColor: '#484C7F' }}
                           >
                             <i className="icofont-plus-circle"></i>
                           </button>
@@ -533,13 +520,9 @@ setFromDate(e.target.value)
                             <i className="icofont-ui-delete"></i>
                           </button>
                         )}
-
-
                       </td>
-
                     </tr>
                   ))}
-
                 </tbody>
               </table>
               {/* {props && JSON.stringify(props.allData.ticketStartDate)} */}
@@ -549,9 +532,10 @@ setFromDate(e.target.value)
             <button
               type="submit"
               className="btn btn-sm btn-primary"
-              style={{ backgroundColor: "#484C7F" }}
-              disabled={props.data.is_regularized === "YES" ? true : false}
-
+              style={{ backgroundColor: '#484C7F' }}
+              disabled={
+                props.data.is_regularized === 'YES' || submitting ? true : false
+              }
             >
               Submit
             </button>

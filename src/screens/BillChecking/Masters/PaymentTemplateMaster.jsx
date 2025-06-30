@@ -25,6 +25,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { toast } from 'react-toastify';
 
 function PaymentTemplateMaster() {
   const dispatch = useDispatch();
@@ -346,9 +347,9 @@ function PaymentTemplateMaster() {
 
     await new CountryService().getCountry().then((res) => {
       if (res.status === 200) {
-        setCountry(res.data.data);
+        setCountry(res.data.data?.data);
         setCountryDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data?.map((d) => ({
             value: d.id,
             label: d.country
           }))
@@ -358,9 +359,9 @@ function PaymentTemplateMaster() {
 
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
-        setState(res.data.data);
+        setState(res.data.data?.data);
         setStateDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data?.map((d) => ({
             value: d.id,
             label: d.state
           }))
@@ -370,9 +371,9 @@ function PaymentTemplateMaster() {
 
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
-        setCity(res.data.data);
+        setCity(res.data.data?.data);
         setCityDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data?.map((d) => ({
             value: d.id,
             label: d.city
           }))
@@ -401,17 +402,18 @@ function PaymentTemplateMaster() {
       await new PaymentTemplateService()
         .createPaymentTemplate(form)
         .then((res) => {
-
-          
           if (res.status === 200 && res.data.status === 1) {
-
-
-            setNotify({ type: 'success', message: res.data.message });
+            // setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message, {
+              position: 'top-right'
+            });
             dispatch(paymentTemplate());
             setModal({ showModal: false, modalData: '', modalHeader: '' });
-
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
           }
           // if (res.status === 200 && res.data.status === 1) {
           //   console.log('res', res);
@@ -433,7 +435,11 @@ function PaymentTemplateMaster() {
           // }
         })
         .catch((error) => {
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+          // setNotify({ type: 'danger', message: 'Request Error !!!' });
+          toast.error('Request Error !!!', {
+            position: 'top-right'
+          });
+
           const { response } = error;
           const { request, ...errorObject } = response;
 
@@ -450,14 +456,23 @@ function PaymentTemplateMaster() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
+              // setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message, {
+                position: 'top-right'
+              });
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               dispatch(paymentTemplate());
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              // setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
             }
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
             new ErrorLogService().sendErrorLog(
               'Payment_template',
               'Create_Payment_template',
@@ -469,7 +484,11 @@ function PaymentTemplateMaster() {
         .catch((error) => {
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+          // setNotify({ type: 'danger', message: 'Request Error !!!' });
+          toast.error('Request Error !!!', {
+            position: 'top-right'
+          });
+
           new ErrorLogService().sendErrorLog(
             'Payment_template',
             'Create_Payment_template',
@@ -493,7 +512,7 @@ function PaymentTemplateMaster() {
   }, [searchTerm]);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
@@ -670,6 +689,7 @@ function PaymentTemplateMaster() {
                       options={weeks.map((d) => ({ label: d, value: d }))}
                       id="payment_weekly"
                       name="payment_weekly[]"
+                      classNamePrefix="react-select"
                       required
                       isMulti
                       defaultValue={
@@ -698,6 +718,7 @@ function PaymentTemplateMaster() {
                         options={options}
                         id="bill_day"
                         name="bill_day[]"
+                        classNamePrefix="react-select"
                         isSearchable
                         ref={billDayRef}
                         isMulti
@@ -718,6 +739,7 @@ function PaymentTemplateMaster() {
                         options={options}
                         id="bill_day[]"
                         name="bill_day[]"
+                        classNamePrefix="react-select"
                         isSearchable
                         isMulti
                         isClearable
@@ -843,7 +865,7 @@ function PaymentTemplateMaster() {
                 className="btn btn-primary text-white"
                 style={{ backgroundColor: '#484C7F' }}
               >
-                Save
+                Submit
               </button>
             )}
             {modal.modalData && (

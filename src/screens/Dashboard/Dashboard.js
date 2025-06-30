@@ -22,6 +22,12 @@ import {
 import Dropdown from 'react-bootstrap/Dropdown';
 import ApproveRequestModal from '../TicketManagement/TaskManagement/components/ApproveRequestModal';
 import TimeRegularizationHistory from '../TicketManagement/TaskManagement/components/TimeRegularizationHistory';
+import { errorHandler } from '../../utils';
+import CustomeLoaderDashboard, {
+  ChartSkeleton
+} from '../../components/custom/loader/CustomeLoaderDashboard';
+import { Spinner } from 'react-bootstrap';
+import ChatBot from './ChatBot';
 
 export default function HrDashboard(props) {
   const history = useNavigate();
@@ -48,11 +54,18 @@ export default function HrDashboard(props) {
     show: false,
     data: null
   });
+  const [loading, setLoading] = useState({
+    id: 0,
+    condition: false,
+    task_list: ''
+  });
 
   const [historyModal, setHistoryModal] = useState({
     show: false,
     data: null
   });
+  const [render, setRender] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const [chartData, setChartData] = useState({
     series: [0, 0, 0],
@@ -83,13 +96,13 @@ export default function HrDashboard(props) {
       // Token has expired, log out the user
       localStorage.removeItem('jwt_token');
       localStorage.removeItem('jwt_token_expiration');
-      sessionStorage.clear();
-      history(`${process.env.PUBLIC_URL}/`);
+      localStorage.clear();
+      history(`/${process.env.REACT_APP_ROOT_URL}/`);
     }
   };
 
   const get = useCallback(async () => {
-    const id = sessionStorage.getItem('id');
+    const id = localStorage.getItem('id');
     const res = await getData(id);
     if (res.status === 200) {
       setCount(res?.data?.data?.count);
@@ -105,9 +118,17 @@ export default function HrDashboard(props) {
         ]
       }));
     }
+    setLoading({ id: 0, condition: false, task_list: '' });
   }, []);
 
-  const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
+  const handleTimer = async (
+    e,
+    ticket_id,
+    ticket_task_id,
+    status,
+    task_list
+  ) => {
+    setLoading({ id: ticket_task_id, condition: true, task_list: task_list });
     var data = {
       tenant_id: localStorage.getItem('tenant_id'),
       ticket_id: ticket_id,
@@ -116,49 +137,63 @@ export default function HrDashboard(props) {
       status: status,
       time: time.getDateTime()
     };
-    await postTimerData(data).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          get();
-        } else {
-          checkTokenExpiration();
+    await postTimerData(data)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            get();
+          } else {
+            checkTokenExpiration();
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
-  const loadNotifcation = () => {
-    getNotification().then((res) => {
-      if (res.status === 200) {
-        setNotifications(null);
-        setApprovedNotifications(null);
-        if (res.data.data !== null) {
-          if (res?.data?.data?.result) {
-            var length = res.data.data.result.length;
+  const loadNotifcation = (type) => {
+    if (type?.toLowerCase() === 'init') {
+      setIsLoading(true);
+    }
+    getNotification()
+      .then((res) => {
+        if (res.status === 200) {
+          setNotifications(null);
+          setApprovedNotifications(null);
+          if (res.data.data !== null) {
+            if (res?.data?.data?.result) {
+              var length = res.data.data.result.length;
 
-            setNotifications(res.data.data.result);
+              setNotifications(res.data.data.result);
 
-            setApprovedNotifications(
-              res?.data?.data?.result?.filter((d) => d?.status === 1)
-            );
+              setApprovedNotifications(
+                res?.data?.data?.result?.filter((d) => d?.status === 1)
+              );
 
-            setAllNotificationRequest(
-              res?.data?.data?.result?.filter(
-                (d) => d?.status !== 0 && d.type === 'Notification'
-              )
-            );
+              setAllNotificationRequest(
+                res?.data?.data?.result?.filter(
+                  (d) => d?.status !== 0 && d.type === 'Notification'
+                )
+              );
 
-            setAllRegularizationRequest(
-              res?.data?.data?.result?.filter(
-                (d) => d?.status !== 0 && d.type === 'Regularization Request'
-              )
-            );
-            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              setAllRegularizationRequest(
+                res?.data?.data?.result?.filter(
+                  (d) => d?.status !== 0 && d.type === 'Regularization Request'
+                )
+              );
+              if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              }
             }
           }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleReadNotification = (e, id) => {
@@ -203,26 +238,24 @@ export default function HrDashboard(props) {
           setIsLoading(false);
 
           if (res?.data?.data?.length) {
-            const temp = res.data.data
-              ?.filter((d) => d?.status_remark !== 'PENDING')
-              ?.map((d) => ({
-                id: d.id,
-                created_by_name: d.created_by_name,
-                from_date: d.from_date,
-                to_date: d.to_date,
-                from_time: d.from_time,
-                to_time: d.to_time,
-                remark: d.remark,
-                is_checked: 0,
-                regularization_time_status: d.regularization_time_status,
-                task_name: d.task_name,
-                ticket_id_name: d.ticket_id_name,
-                actual_time: d.actual_time,
-                task_hours: d.task_hours,
-                scheduled_time: d.scheduled_time,
-                approved_by_name: d.approved_by_name,
-                status: d.status_remark
-              }));
+            const temp = res.data.data?.map((d) => ({
+              id: d.id,
+              created_by_name: d.created_by_name,
+              from_date: d.from_date,
+              to_date: d.to_date,
+              from_time: d.from_time,
+              to_time: d.to_time,
+              remark: d.remark,
+              is_checked: 0,
+              regularization_time_status: d.regularization_time_status,
+              task_name: d.task_name,
+              ticket_id_name: d.ticket_id_name,
+              actual_time: d.actual_time,
+              task_hours: d.task_hours,
+              scheduled_time: d.scheduled_time,
+              approved_by_name: d.approved_by_name,
+              status: d.status_remark
+            }));
 
             // Assuming setDataa is a function to set the state
             setHistoryData(temp);
@@ -231,6 +264,7 @@ export default function HrDashboard(props) {
         }
       })
       .catch((error) => {
+        errorHandler(error);
         // Handle errors, e.g., show an error message to the user
       });
     const data = null;
@@ -252,6 +286,7 @@ export default function HrDashboard(props) {
       if (res.status === 200) {
         setIsLoading(false);
         const temp = res?.data?.data
+
           ?.filter((d) => d.status_remark === 'PENDING')
           .map((d) => ({
             id: d.id,
@@ -275,21 +310,69 @@ export default function HrDashboard(props) {
       }
     });
   };
+  const [animatedCounts, setAnimatedCounts] = useState({
+    pendingTask: 0,
+    workingTask: 0,
+    completedTask: 0,
+    totalTask: 0
+  });
 
   useEffect(() => {
+    if (!count) return;
+
+    const keys = ['pendingTask', 'workingTask', 'completedTask', 'totalTask'];
+    const startValues = { ...animatedCounts };
+    const endValues = { ...count };
+
+    let startTime = null;
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / 1000, 1);
+
+      const newCounts = {};
+      keys.forEach((key) => {
+        const start = startValues[key] || 0;
+        const end = endValues[key] || 0;
+        newCounts[key] = Math.round(start + (end - start) * progress);
+      });
+
+      setAnimatedCounts(newCounts);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [count]);
+  useEffect(() => {
     get();
-    loadNotifcation();
+    loadNotifcation('init');
   }, [get]);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const account_for = localStorage.getItem('account_for');
 
     if (account_for === 'CUSTOMER') {
-      window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Ticket`;
     }
 
     loadData();
   }, [loadData]);
+
+  const [showFirst, setShowFirst] = useState(false);
+  const [showSecond, setShowSecond] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShowFirst(true);
+    }, 200);
+    setTimeout(() => {
+      setShowSecond(true);
+    }, 900);
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -301,1316 +384,1612 @@ export default function HrDashboard(props) {
         }}
       >
         <PageHeader headerTitle="Dashboard" />
-
-        <div style={{ position: 'relative', marginTop: '-40px' }}>
-          {(historyModal.show || approveRequestModal.show) === false && (
-            <Dropdown
-              className="notifications"
-              style={{ zIndex: -200 }}
-              onClick={() => {
-                loadNotifcation();
-              }}
-            >
-              <Dropdown.Toggle
-                as="a"
-                className="nav-link dropdown-toggle pulse"
-                style={{ zIndex: -200 }}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-around'
+          }}
+        >
+          <div style={{ position: 'relative' }}>
+            {(historyModal.show || approveRequestModal.show) === false && (
+              <Dropdown
+                className="notifications"
+                style={{ zIndex: 99 }}
+                onClick={() => {
+                  loadNotifcation();
+                }}
               >
-                <div className=" me-3" style={{ marginLeft: '28%' }}>
-                  <div>
-                    <button
-                      class=" badge bg-primary p-2"
-                      style={{
-                        width: 'auto',
-                        padding: '0.5rem 2rem',
-                        lineHeight: 'revert-layer'
-                      }}
-                    >
-                      Regularization
-                    </button>
-                    {approvedNotifications?.length > 0 ? (
-                      <div
-                        className="notification-circle"
+                <Dropdown.Toggle
+                  as="a"
+                  className="nav-link dropdown-toggle pulse"
+                  style={{ zIndex: 99 }}
+                >
+                  <div className=" me-3" style={{ marginLeft: '28%' }}>
+                    <div>
+                      <button
+                        class=" badge bg-primary"
                         style={{
-                          position: 'absolute',
-                          top: '-10px',
-                          right: '-10px',
-                          padding: '3px',
-                          backgroundColor: 'rgb(255, 24, 67)',
-                          borderRadius: '50%',
-                          justifyContent: 'center',
+                          lineHeight: 'revert-layer',
+                          display: 'flex',
+                          gap: '0.2rem',
+                          padding: '0.6rem',
                           alignItems: 'center',
-                          color: 'white',
-                          textAlign: 'center',
-                          fontSize: '0.8rem',
-                          fontWeight: 'bold',
-                          minWidth: '20px', // Minimum width to prevent squishing
-                          height: 'auto' // Let the height adjust automatically}}
+                          height: '2rem'
                         }}
                       >
-                        {approvedNotifications.length}
-                      </div>
-                    ) : (
-                      allRegularizationRequest?.length > 0 && (
+                        Regularization
+                        {isLoading && (
+                          <Spinner
+                            animation="border"
+                            size="sm"
+                            className="mb-1"
+                          />
+                        )}
+                      </button>
+                      {approvedNotifications?.length > 0 ? (
                         <div
                           className="notification-circle"
                           style={{
                             position: 'absolute',
                             top: '-10px',
                             right: '-10px',
-                            // padding: '3px',
+                            padding: '3px',
                             backgroundColor: 'rgb(255, 24, 67)',
                             borderRadius: '50%',
                             justifyContent: 'center',
                             alignItems: 'center',
                             color: 'white',
                             textAlign: 'center',
-                            // fontSize: '0.8rem',
+                            fontSize: '0.8rem',
                             fontWeight: 'bold',
-                            color: 'red',
                             minWidth: '20px', // Minimum width to prevent squishing
                             height: 'auto' // Let the height adjust automatically}}
                           }}
                         >
-                          .
+                          {approvedNotifications.length}
                         </div>
-                      )
-                    )}
-                  </div>
-                </div>
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
-                <div className="card border-0" style={{ width: '32rem' }}>
-                  <div className="card-header border-0 p-3">
-                    <h5 className="mb-0 font-weight-light d-flex justify-content-between">
-                      <span className="d-flex align-items-center">
-                        Regularization Request :{'  '}
-                        {showApprovedOnly === true ? (
-                          <span className="mx-2"> Approved Only By Me </span>
-                        ) : (
-                          <span className="mx-2">View All Request</span>
-                        )}
-                      </span>
-
-                      <div className="d-flex justify-content-start align-items-center gap-2">
-                        {notifications && (
-                          <button
-                            title="Clear All Nofication"
-                            className="fw-bold badge bg-danger p-2 "
-                            onClick={handleClearAllRegularizationNotification}
-                          >
-                            <i class="icofont-delete-alt"></i>
-                          </button>
-                        )}
-                        {notifications && (
-                          <button
-                            onClick={(e) => {
-                              handleHistoryModal();
+                      ) : (
+                        allRegularizationRequest?.length > 0 && (
+                          <div
+                            className="notification-circle"
+                            style={{
+                              position: 'absolute',
+                              top: '-10px',
+                              right: '-10px',
+                              // padding: '3px',
+                              backgroundColor: 'rgb(255, 24, 67)',
+                              borderRadius: '50%',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              color: 'white',
+                              textAlign: 'center',
+                              // fontSize: '0.8rem',
+                              fontWeight: 'bold',
+                              color: 'red',
+                              minWidth: '20px', // Minimum width to prevent squishing
+                              height: 'auto' // Let the height adjust automatically}}
                             }}
-                            className="fw-bold badge bg-warning p-2"
                           >
-                            <i class="icofont-history me-1"></i>
-                            History
-                          </button>
+                            .
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
+                  <div className="card border-0" style={{ width: '32rem' }}>
+                    <div className="card-header border-0 p-3">
+                      <h5 className="mb-0 font-weight-light d-flex justify-content-between">
+                        <span className="d-flex align-items-center">
+                          Regularization Request :{'  '}
+                          {showApprovedOnly === true ? (
+                            <span className="mx-2"> Approved Only By Me </span>
+                          ) : (
+                            <span className="mx-2">View All Request</span>
+                          )}
+                        </span>
+
+                        <div className="d-flex justify-content-start align-items-center gap-2">
+                          {notifications && (
+                            <button
+                              title="Clear All Nofication"
+                              className="fw-bold badge bg-danger p-2 "
+                              onClick={handleClearAllRegularizationNotification}
+                            >
+                              <i class="icofont-delete-alt"></i>
+                            </button>
+                          )}
+                          {notifications && (
+                            <button
+                              onClick={(e) => {
+                                handleHistoryModal();
+                              }}
+                              className="fw-bold badge bg-warning p-2"
+                            >
+                              <i class="icofont-history me-1"></i>
+                              History
+                            </button>
+                          )}
+                        </div>
+                        {!notifications && (
+                          <span className="badge text-white">0</span>
+                        )}
+                      </h5>
+                    </div>
+                    <div
+                      className="tab-content card-body"
+                      style={{
+                        maxHeight: '200px',
+                        overflowY: 'auto'
+                      }}
+                    >
+                      {showApprovedOnly ? (
+                        <div className="tab-pane fade show active">
+                          <ul
+                            className="list-unstyled list mb-0"
+                            style={{ height: `${notificationHeight}px` }}
+                          >
+                            {approvedNotifications?.length > 0 &&
+                              approvedNotifications?.map((ele, index) => {
+                                const date = ele.created_at.split(' ')[0];
+                                const time = ele.created_at.split(' ')[1];
+
+                                const parts = ele.url.split('/'); // Split the string by '/'
+                                const ticketID = parts[parts.length - 1]; // Get the last part of the array
+                                const notificationid = ele.id;
+                                return (
+                                  <li
+                                    className="py-2 mb-1 border-bottom"
+                                    key={index}
+                                  >
+                                    <div
+                                      className="flex-fill ms-2"
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={(e) => {
+                                        handleShowApproveRequestModal();
+                                        handleRegularizationRequest({
+                                          ticketID,
+                                          notificationid
+                                        });
+                                      }}
+                                    >
+                                      {ele.url && (
+                                        // <Link to={`/${_base}/${ele.url}`}>
+                                        <p className="d-flex justify-content-between mb-0">
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2">
+                                              {' '}
+                                              {`Date : ${date}`}
+                                            </span>
+                                            <span
+                                              className="fw-bold badge bg-danger p-2"
+                                              style={{ marginLeft: '10px' }}
+                                            >
+                                              {' '}
+                                              {`Time : ${time}`}
+                                            </span>
+                                            <br />
+                                            <div>{ele.message}</div>
+                                          </span>
+                                        </p>
+                                        // </Link>
+                                      )}
+
+                                      {!ele.url && (
+                                        <p className="d-flex justify-content-between mb-0">
+                                          <span className="font-weight-bold">
+                                            {ele.message}
+                                            {date}
+                                          </span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        </div>
+                      ) : (
+                        <div className="tab-pane fade show active">
+                          <ul
+                            className="list-unstyled list mb-0"
+                            style={{ height: `${notificationHeight}px` }}
+                          >
+                            {allRegularizationRequest?.length > 0 &&
+                              allRegularizationRequest?.map((ele, index) => {
+                                const date = ele.created_at.split(' ')[0];
+                                const time = ele.created_at.split(' ')[1];
+
+                                const parts1 = ele?.url?.split('/'); // Split the string by '/'
+                                const ticketID1 =
+                                  parts1 && parts1[parts1?.length - 1];
+
+                                return (
+                                  <li
+                                    className="py-2 mb-1 border-bottom"
+                                    key={index}
+                                  >
+                                    <div
+                                      className="flex-fill ms-2"
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={(e) => {
+                                        handleShowApproveRequestModal();
+                                        handleRegularizationRequest(ticketID1);
+                                      }}
+                                    >
+                                      {ele.url && (
+                                        <p className="d-flex justify-content-between mb-0">
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2">
+                                              {' '}
+                                              {`Date : ${date}`}
+                                            </span>
+                                            <span
+                                              className="fw-bold badge bg-danger p-2"
+                                              style={{ marginLeft: '10px' }}
+                                            >
+                                              {' '}
+                                              {`Time : ${time}`}
+                                            </span>
+                                            <br />
+                                            {ele.message}
+                                          </span>
+                                        </p>
+                                        // </Link>
+                                      )}
+
+                                      {!ele.url && (
+                                        <p className="d-flex justify-content-between mb-0">
+                                          <span className="font-weight-bold">
+                                            {ele.message}
+                                            {date}
+                                          </span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+
+                            {allNotificationRequest &&
+                              allNotificationRequest?.length > 0 &&
+                              allNotificationRequest?.map((ele, index) => {
+                                const date = ele.created_at.split(' ')[0];
+                                const time = ele.created_at.split(' ')[1];
+
+                                // const parts1 = ele?.url?.split('/'); // Split the string by '/'
+                                // const ticketID1 =
+                                //   parts1 && parts1[parts1?.length - 1];
+
+                                return (
+                                  <li
+                                    className="py-2 mb-1 border-bottom"
+                                    key={index}
+                                  >
+                                    <div
+                                      className="flex-fill ms-2"
+                                      style={{ cursor: 'pointer' }}
+                                      onClick={(e) =>
+                                        handleReadNotification(e, ele.id)
+                                      }
+                                    >
+                                      {ele.url && (
+                                        <p className="d-flex justify-content-between mb-0">
+                                          <span className="font-weight-bold">
+                                            <span className="fw-bold badge bg-primary p-2">
+                                              {' '}
+                                              {`Date : ${date}`}
+                                            </span>
+                                            <span
+                                              className="fw-bold badge bg-danger p-2"
+                                              style={{ marginLeft: '10px' }}
+                                            >
+                                              {' '}
+                                              {`Time : ${time}`}
+                                            </span>
+                                            <br />
+                                            {ele.message}
+                                          </span>
+                                        </p>
+                                        // </Link>
+                                      )}
+
+                                      {!ele.url && (
+                                        <p className="d-flex justify-content-between mb-0">
+                                          <span className="font-weight-bold">
+                                            {ele.message}
+                                            {date}
+                                          </span>
+                                        </p>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className="row m-0"
+                      style={{
+                        border: '2px solid #ccc',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        height: '100%'
+                      }}
+                    >
+                      <div
+                        className={`col-4 card-footer text-center border-top-0 ${
+                          !showApprovedOnly ? 'bg-info' : 'white'
+                        }`}
+                        style={{ width: '50%', height: '50px' }}
+                        onClick={() => setShowApprovedOnly(false)}
+                      >
+                        <div className="btn-group h-100">
+                          <Link
+                            to={`/${_base}/Dashboard`}
+                            style={{ width: '100%' }}
+                          >
+                            View All Request
+                          </Link>
+                        </div>
+                      </div>
+
+                      <div
+                        className={`col-4 card-footer text-center border-top-0 ${
+                          showApprovedOnly ? 'bg-info' : 'white'
+                        }`}
+                        style={{ width: '50%', height: '50px' }}
+                        onClick={() => setShowApprovedOnly(true)}
+                      >
+                        <div className="btn-group h-100">
+                          <Link
+                            to={`/${_base}/Dashboard`}
+                            style={{ width: '100%' }}
+                          >
+                            Approved Only By Me
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
+
+            <>
+              {approveRequestModal && (
+                <ApproveRequestModal
+                  show={approveRequestModal.show}
+                  hide={handleCloseApproveRequestModal}
+                  data={regularizationRequest && regularizationRequest}
+                  ticketId={ticketID}
+                  isLoading={isLoading}
+                  notificationId={notificationId}
+                />
+              )}
+            </>
+
+            <>
+              {historyModal && regularizationRequest && (
+                <TimeRegularizationHistory
+                  show={historyModal.show}
+                  hide={handleCloseHistoryModal}
+                  data={historyData}
+                  isLoading={isLoading}
+                  setHistoryData={setHistoryData}
+                  setHistoryModal={setHistoryModal}
+                />
+              )}
+            </>
+          </div>
+        </div>
+      </div>
+      {render ? (
+        <>
+          <div style={{ height: '100vh', overflow: 'hidden' }}>
+            <iframe
+              src="https://app.powerbi.com/view?r=eyJrIjoiNzY3NGE2Y2ItYzM4Yi00M2IxLTgzZGQtOTI3YmMxYzk3ZmVlIiwidCI6IjJhZTgyM2ViLTE3YTYtNDIyOS1iOGNiLTFiMGI0ZDJhNDM1MyJ9"
+              title="Full Screen Iframe"
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none'
+              }}
+              allowFullScreen
+            ></iframe>
+          </div>
+        </>
+      ) : (
+        <>
+          {' '}
+          <div className="row row_gap_3 mt-2">
+            <div className="col-md-6 col-lg-3 animate-box cp">
+              <div
+                style={{
+                  borderRadius: '10px',
+                  // border: '5px solid red',
+                  boxShadow: ' rgba(0, 0, 0, 0.30) 0px 5px 15px'
+                }}
+                className="card bg-danger text-white total-task-hover-effect"
+              >
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult">
+                      <i className="bi bi-journal-check fs-4"></i>
+                    </div>
+                    <div className="flex-fill ms-4">
+                      <div className="">
+                        <strong style={{ fontSize: '12px' }}>
+                          Pending Task
+                        </strong>
+                      </div>
+                      <div>
+                        {count && (
+                          <h5 className="mb-0 ">
+                            {animatedCounts?.pendingTask}
+                          </h5>
                         )}
                       </div>
-                      {!notifications && (
-                        <span className="badge text-white">0</span>
+                    </div>
+                    <div
+                      title="view-members"
+                      className="btn btn-link text-decoration-none  rounded-1"
+                    >
+                      <i className="icofont-hand-drawn-right fs-2 text-white"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-6 col-lg-3 animate-box cp">
+              <div
+                style={{
+                  borderRadius: '10px',
+                  boxShadow: ' rgba(0, 0, 0, 0.30) 0px 5px 15px'
+                }}
+                className="card bg-warning text-white total-task-hover-effect"
+              >
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult">
+                      <i className="bi bi-journal-check fs-4"></i>
+                    </div>
+                    <div className="flex-fill ms-4">
+                      <div className="">
+                        <strong style={{ fontSize: '12px' }}>
+                          Working Task
+                        </strong>
+                      </div>
+                      <div>
+                        {count && (
+                          <h5 className="mb-0 ">
+                            {animatedCounts?.workingTask}
+                          </h5>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      title="view-members"
+                      className="btn btn-link text-decoration-none  rounded-1"
+                    >
+                      <i className="icofont-hand-drawn-right fs-2 text-white"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-6 col-lg-3 animate-box cp">
+              <div
+                style={{
+                  borderRadius: '10px',
+                  boxShadow: ' rgba(0, 0, 0, 0.30) 0px 5px 15px'
+                }}
+                className="card bg-success text-white total-task-hover-effect"
+              >
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult">
+                      <i className="bi bi-journal-check fs-4"></i>
+                    </div>
+                    <div className="flex-fill ms-4">
+                      <div className="">
+                        <strong style={{ fontSize: '12px' }}>
+                          Completed Task
+                        </strong>
+                      </div>
+                      <div>
+                        {count && (
+                          <h5 className="mb-0 ">
+                            {animatedCounts?.completedTask}
+                          </h5>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      title="view-members"
+                      className="btn btn-link text-decoration-none  rounded-1"
+                    >
+                      <i className="icofont-hand-drawn-right fs-2 text-white"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-6 col-lg-3 animate-box cp">
+              <div
+                style={{
+                  borderRadius: '10px',
+                  boxShadow: ' rgba(0, 0, 0, 0.30) 0px 5px 15px'
+                }}
+                className="card bg-info text-white total-task-hover-effect"
+              >
+                <div className="card-body">
+                  <div className="d-flex align-items-center">
+                    <div className="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult">
+                      <i className="bi bi-journal-check fs-4"></i>
+                    </div>
+                    <div className="flex-fill ms-4">
+                      <div className="">
+                        <strong style={{ fontSize: '12px' }}>Total Task</strong>
+                      </div>
+                      <div>
+                        {count && (
+                          <h5 className="mb-0 ">{animatedCounts?.totalTask}</h5>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      title="view-members"
+                      className="btn btn-link text-decoration-none  rounded-1"
+                    >
+                      <i className="icofont-hand-drawn-right fs-2 text-white"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>{' '}
+          <div className="row g-3 mb-3 row-deck mt-2">
+            {showFirst && (
+              <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6 animate-box">
+                <div
+                  style={{
+                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px',
+                    overflow: 'hidden',
+                    borderRadius: '10px'
+                  }}
+                  className="card"
+                >
+                  <div className="card-header border-bottom text-white bg-primary">
+                    <h5 className="">My Tasks</h5>
+                  </div>
+                  {dailyTask && dailyTask.length >= 0 ? (
+                    <div className="card-body p-0">
+                      <div
+                        className="flex-grow-1"
+                        style={{ height: '250px', overflowY: 'scroll' }}
+                      >
+                        {dailyTask &&
+                          dailyTask.length >= 0 &&
+                          dailyTask.map((ele, index) => {
+                            if (ele.time_status === 'STOP') {
+                              return (
+                                <div
+                                  className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
+                                  style={{ backgroundColor: '#EBF5FB' }}
+                                >
+                                  <div className="d-flex align-items-center flex-fill">
+                                    <div className="d-flex flex-column ps-3">
+                                      <Link
+                                        to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                                      >
+                                        <h6
+                                          className="fw-bold mb-0 small-14"
+                                          title={ele.task_name}
+                                        >
+                                          {index + 1}. {ele.main_ticket_id}-
+                                          {ele.task_name.length < 20
+                                            ? ele.task_name
+                                            : ele.task_name.substring(0, 20) +
+                                              '....'}
+                                        </h6>
+                                      </Link>
+                                    </div>
+                                  </div>
+                                  {ele.status !== 'COMPLETED' && (
+                                    <button
+                                      type="button"
+                                      style={{
+                                        border: 'none',
+                                        borderRadius: '25%',
+                                        height: '35px',
+                                        width: '35px',
+                                        textAlign: 'center',
+                                        margin: '0px',
+                                        padding: '0px'
+                                      }}
+                                      title="Stop Task"
+                                      onClick={(e) =>
+                                        handleTimer(
+                                          e,
+                                          ele.ticket_id,
+                                          ele.id,
+                                          'STOP',
+                                          'my_task'
+                                        )
+                                      }
+                                    >
+                                      {loading.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'my_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-pause"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#EC7063',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
+                                    </button>
+                                  )}
+
+                                  {ele && ele.total_worked && (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.total_worked}
+                                    </span>
+                                  )}
+
+                                  {ele && ele.task_hours && (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.task_hours}
+                                    </span>
+                                  )}
+
+                                  {ele && ele && ele.status === 'TO_DO' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : ele.status === 'IN_PROGRESS' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-warning p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-success p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  )}
+                                  <div className="time-block text-truncate ">
+                                    {ele.priority === 'Very High' && (
+                                      <span
+                                        className="badge bg-danger p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'High' && (
+                                      <span
+                                        className="badge bg-warning p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Medium' && (
+                                      <span
+                                        className="badge bg-info p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Low' && (
+                                      <span
+                                        className="badge bg-success p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
+
+                        {dailyTask.length >= 0 &&
+                          dailyTask.map((ele, index) => {
+                            if (ele.time_status === 'START') {
+                              return (
+                                <div
+                                  className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
+                                  style={{ backgroundColor: '#EBF5FB' }}
+                                >
+                                  <div className="d-flex align-items-center flex-fill">
+                                    <div className="d-flex flex-column ps-3">
+                                      <Link
+                                        to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                                      >
+                                        {ele.task_name ? (
+                                          <h6
+                                            className="fw-bold mb-0 small-14 task-name"
+                                            title={ele.task_name}
+                                          >
+                                            {index + 1}. {ele.main_ticket_id}-
+                                            {ele.task_name.length < 20
+                                              ? ele.task_name
+                                              : ele.task_name.substring(0, 20) +
+                                                '....'}
+                                          </h6>
+                                        ) : (
+                                          'NO DATA'
+                                        )}
+                                      </Link>
+                                    </div>
+                                  </div>
+                                  {ele.status !== 'COMPLETED' && (
+                                    <button
+                                      type="button"
+                                      style={{
+                                        border: 'none',
+                                        borderRadius: '25%',
+                                        height: '35px',
+                                        width: '35px',
+                                        textAlign: 'center',
+                                        margin: '0px',
+                                        padding: '0px'
+                                      }}
+                                      title="Start Task"
+                                      onClick={(e) =>
+                                        handleTimer(
+                                          e,
+                                          ele.ticket_id,
+                                          ele.id,
+                                          'START',
+                                          'my_task'
+                                        )
+                                      }
+                                    >
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'my_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-play"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#1ABC9C',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
+                                    </button>
+                                  )}
+                                  {ele && ele && ele.status === 'TO_DO' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : ele.status === 'IN_PROGRESS' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-warning p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-success p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  )}
+
+                                  <div className="time-block text-truncate">
+                                    {ele.priority === 'Very High' && (
+                                      <span
+                                        className="badge bg-danger p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'High' && (
+                                      <span
+                                        className="badge bg-danger p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Medium' && (
+                                      <span
+                                        className="badge bg-info p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Low' && (
+                                      <span
+                                        className="badge bg-success p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
+                      </div>
+                    </div>
+                  ) : (
+                    <CustomeLoaderDashboard />
+                  )}
+                </div>
+              </div>
+            )}
+            {showFirst && (
+              <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6 animate-box">
+                <div
+                  style={{
+                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px',
+                    overflow: 'hidden',
+                    borderRadius: '10px'
+                  }}
+                  className="card "
+                >
+                  <div className="card-header border-bottom bg-primary text-white">
+                    <h5 className="">Pending Tasks</h5>
+                  </div>
+                  {dailyTask && dailyTask.length >= 0 ? (
+                    <div className="card-body p-0">
+                      <div
+                        className="flex-grow-1"
+                        style={{ height: '250px', overflowY: 'scroll' }}
+                      >
+                        {previousTask &&
+                          previousTask.length >= 0 &&
+                          previousTask.map((ele, index) => {
+                            if (ele.time_status === 'STOP') {
+                              return (
+                                <div
+                                  className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
+                                  style={{ backgroundColor: '#EBF5FB' }}
+                                >
+                                  <div className="d-flex align-items-center flex-fill">
+                                    <div className="d-flex flex-column ps-3">
+                                      <Link
+                                        to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                                      >
+                                        <h6
+                                          className="fw-bold mb-0 small-14 task-name"
+                                          title={ele.task_name}
+                                        >
+                                          {index + 1}. {ele.main_ticket_id}-
+                                          {ele.task_name.length < 20
+                                            ? ele.task_name
+                                            : ele.task_name.substring(0, 20) +
+                                              '....'}
+                                        </h6>
+                                      </Link>
+                                    </div>
+                                  </div>
+
+                                  {ele.status !== 'COMPLETED' && (
+                                    <button
+                                      type="button"
+                                      style={{
+                                        border: 'none',
+                                        borderRadius: '25%',
+                                        height: '35px',
+                                        width: '35px',
+                                        textAlign: 'center',
+                                        margin: '0px',
+                                        padding: '0px'
+                                      }}
+                                      title="Stop Task"
+                                      onClick={(e) =>
+                                        handleTimer(
+                                          e,
+                                          ele.ticket_id,
+                                          ele.id,
+                                          'STOP',
+                                          'pending_task'
+                                        )
+                                      }
+                                    >
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'pending_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-pause"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#EC7063',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
+                                    </button>
+                                  )}
+
+                                  {ele && ele.total_worked && (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.total_worked}
+                                    </span>
+                                  )}
+
+                                  {ele && ele.task_hours && (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.task_hours}
+                                    </span>
+                                  )}
+
+                                  {ele && ele && ele.status === 'TO_DO' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : ele.status === 'IN_PROGRESS' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-warning p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-success p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  )}
+                                  <span
+                                    className="badge bg-primary p-2"
+                                    style={{
+                                      width: '100px',
+                                      marginRight: '5px'
+                                    }}
+                                  >
+                                    {ele.end_date}
+                                  </span>
+
+                                  <div className="time-block text-truncate  ">
+                                    {ele.priority === 'Very High' && (
+                                      <span
+                                        className="badge bg-danger"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+
+                                    {ele.priority === 'High' && (
+                                      <span
+                                        className="badge bg-danger p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Medium' && (
+                                      <span
+                                        className="badge bg-info p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Low' && (
+                                      <span
+                                        className="badge bg-success p-2"
+                                        style={{ width: '100px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
+
+                        {previousTask &&
+                          previousTask.length >= 0 &&
+                          previousTask.map((ele, index) => {
+                            if (ele.time_status === 'START') {
+                              return (
+                                <div
+                                  className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
+                                  style={{ backgroundColor: '#EBF5FB' }}
+                                >
+                                  <div className="d-flex align-items-center flex-fill">
+                                    <div className="d-flex flex-column ps-3">
+                                      <Link
+                                        to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                                      >
+                                        <h6
+                                          className="fw-bold mb-0 small-14 task-name"
+                                          title={ele.task_name}
+                                        >
+                                          {index + 1}. {ele.main_ticket_id}-
+                                          {ele.task_name.length < 20
+                                            ? ele.task_name
+                                            : ele.task_name.substring(0, 20) +
+                                              '....'}
+                                        </h6>
+                                      </Link>
+                                    </div>
+                                  </div>
+                                  {ele.status !== 'COMPLETED' && (
+                                    <button
+                                      type="button"
+                                      style={{
+                                        border: 'none',
+                                        borderRadius: '25%',
+                                        height: '35px',
+                                        width: '35px',
+                                        textAlign: 'center',
+                                        margin: '0px',
+                                        padding: '0px'
+                                      }}
+                                      title="Start Task"
+                                      onClick={(e) =>
+                                        handleTimer(
+                                          e,
+                                          ele.ticket_id,
+                                          ele.id,
+                                          'START',
+                                          'pending_task'
+                                        )
+                                      }
+                                    >
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'pending_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-play"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#1ABC9C',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
+                                    </button>
+                                  )}
+                                  {ele && ele && ele.status === 'TO_DO' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : ele.status === 'IN_PROGRESS' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-warning p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-success p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  )}
+                                  <span
+                                    className="badge bg-primary p-2"
+                                    style={{
+                                      width: '80px',
+                                      marginRight: '5px'
+                                    }}
+                                  >
+                                    {ele.end_date}
+                                  </span>
+                                  <div className="time-block text-truncate">
+                                    {ele.priority === 'Very High' && (
+                                      <span
+                                        className="badge bg-danger p-2"
+                                        style={{ width: '80px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'High' && (
+                                      <span
+                                        className="badge bg-danger p-2"
+                                        style={{ width: '80px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Medium' && (
+                                      <span
+                                        className="badge bg-info p-2"
+                                        style={{ width: '80px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Low' && (
+                                      <span
+                                        className="badge bg-success p-2"
+                                        style={{ width: '80px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
+                      </div>
+                    </div>
+                  ) : (
+                    <CustomeLoaderDashboard />
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="row g-3 mb-3 row-deck ">
+            {showSecond && (
+              <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6 animate-box">
+                <div
+                  style={{
+                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px',
+                    overflow: 'hidden',
+                    borderRadius: '10px'
+                  }}
+                  className="card "
+                >
+                  <div className="card-header border-bottom text-white bg-primary">
+                    <h5 className=" ">Work Analysis</h5>
+                  </div>
+                  <div className="card-body p-0">
+                    <div className="flex-grow-1" style={{ height: '250px' }}>
+                      {dailyTask && dailyTask?.length >= 0 ? (
+                        <Chart
+                          options={chartData.options}
+                          series={chartData?.series}
+                          type="donut"
+                          height="250"
+                        />
+                      ) : (
+                        <ChartSkeleton />
                       )}
-                    </h5>
-                  </div>
-                  <div
-                    className="tab-content card-body"
-                    style={{
-                      maxHeight: '200px',
-                      overflowY: 'auto'
-                    }}
-                  >
-                    {showApprovedOnly ? (
-                      <div className="tab-pane fade show active">
-                        <ul
-                          className="list-unstyled list mb-0"
-                          style={{ height: `${notificationHeight}px` }}
-                        >
-                          {approvedNotifications?.length > 0 &&
-                            approvedNotifications?.map((ele, index) => {
-                              const date = ele.created_at.split(' ')[0];
-                              const time = ele.created_at.split(' ')[1];
-
-                              const parts = ele.url.split('/'); // Split the string by '/'
-                              const ticketID = parts[parts.length - 1]; // Get the last part of the array
-                              const notificationid = ele.id;
-                              return (
-                                <li
-                                  className="py-2 mb-1 border-bottom"
-                                  key={index}
-                                >
-                                  <div
-                                    className="flex-fill ms-2"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(e) => {
-                                      handleShowApproveRequestModal();
-                                      handleRegularizationRequest({
-                                        ticketID,
-                                        notificationid
-                                      });
-                                    }}
-                                  >
-                                    {ele.url && (
-                                      // <Link to={`/${_base}/${ele.url}`}>
-                                      <p className="d-flex justify-content-between mb-0">
-                                        <span className="font-weight-bold">
-                                          <span className="fw-bold badge bg-primary p-2">
-                                            {' '}
-                                            {`Date : ${date}`}
-                                          </span>
-                                          <span
-                                            className="fw-bold badge bg-danger p-2"
-                                            style={{ marginLeft: '10px' }}
-                                          >
-                                            {' '}
-                                            {`Time : ${time}`}
-                                          </span>
-                                          <br />
-                                          <div>{ele.message}</div>
-                                        </span>
-                                      </p>
-                                      // </Link>
-                                    )}
-
-                                    {!ele.url && (
-                                      <p className="d-flex justify-content-between mb-0">
-                                        <span className="font-weight-bold">
-                                          {ele.message}
-                                          {date}
-                                        </span>
-                                      </p>
-                                    )}
-                                  </div>
-                                </li>
-                              );
-                            })}
-                        </ul>
-                      </div>
-                    ) : (
-                      <div className="tab-pane fade show active">
-                        <ul
-                          className="list-unstyled list mb-0"
-                          style={{ height: `${notificationHeight}px` }}
-                        >
-                          {allRegularizationRequest?.length > 0 &&
-                            allRegularizationRequest?.map((ele, index) => {
-                              const date = ele.created_at.split(' ')[0];
-                              const time = ele.created_at.split(' ')[1];
-
-                              const parts1 = ele?.url?.split('/'); // Split the string by '/'
-                              const ticketID1 =
-                                parts1 && parts1[parts1?.length - 1];
-
-                              return (
-                                <li
-                                  className="py-2 mb-1 border-bottom"
-                                  key={index}
-                                >
-                                  <div
-                                    className="flex-fill ms-2"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(e) => {
-                                      handleShowApproveRequestModal();
-                                      handleRegularizationRequest(ticketID1);
-                                    }}
-                                  >
-                                    {ele.url && (
-                                      <p className="d-flex justify-content-between mb-0">
-                                        <span className="font-weight-bold">
-                                          <span className="fw-bold badge bg-primary p-2">
-                                            {' '}
-                                            {`Date : ${date}`}
-                                          </span>
-                                          <span
-                                            className="fw-bold badge bg-danger p-2"
-                                            style={{ marginLeft: '10px' }}
-                                          >
-                                            {' '}
-                                            {`Time : ${time}`}
-                                          </span>
-                                          <br />
-                                          {ele.message}
-                                        </span>
-                                      </p>
-                                      // </Link>
-                                    )}
-
-                                    {!ele.url && (
-                                      <p className="d-flex justify-content-between mb-0">
-                                        <span className="font-weight-bold">
-                                          {ele.message}
-                                          {date}
-                                        </span>
-                                      </p>
-                                    )}
-                                  </div>
-                                </li>
-                              );
-                            })}
-
-                          {allNotificationRequest &&
-                            allNotificationRequest?.length > 0 &&
-                            allNotificationRequest?.map((ele, index) => {
-                              const date = ele.created_at.split(' ')[0];
-                              const time = ele.created_at.split(' ')[1];
-
-                              // const parts1 = ele?.url?.split('/'); // Split the string by '/'
-                              // const ticketID1 =
-                              //   parts1 && parts1[parts1?.length - 1];
-
-                              return (
-                                <li
-                                  className="py-2 mb-1 border-bottom"
-                                  key={index}
-                                >
-                                  <div
-                                    className="flex-fill ms-2"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(e) =>
-                                      handleReadNotification(e, ele.id)
-                                    }
-                                  >
-                                    {ele.url && (
-                                      <p className="d-flex justify-content-between mb-0">
-                                        <span className="font-weight-bold">
-                                          <span className="fw-bold badge bg-primary p-2">
-                                            {' '}
-                                            {`Date : ${date}`}
-                                          </span>
-                                          <span
-                                            className="fw-bold badge bg-danger p-2"
-                                            style={{ marginLeft: '10px' }}
-                                          >
-                                            {' '}
-                                            {`Time : ${time}`}
-                                          </span>
-                                          <br />
-                                          {ele.message}
-                                        </span>
-                                      </p>
-                                      // </Link>
-                                    )}
-
-                                    {!ele.url && (
-                                      <p className="d-flex justify-content-between mb-0">
-                                        <span className="font-weight-bold">
-                                          {ele.message}
-                                          {date}
-                                        </span>
-                                      </p>
-                                    )}
-                                  </div>
-                                </li>
-                              );
-                            })}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  <div
-                    className="row m-0"
-                    style={{
-                      border: '2px solid #ccc',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      height: '100%'
-                    }}
-                  >
-                    <div
-                      className={`col-4 card-footer text-center border-top-0 ${
-                        !showApprovedOnly ? 'bg-info' : 'white'
-                      }`}
-                      style={{ width: '50%', height: '50px' }}
-                      onClick={() => setShowApprovedOnly(false)}
-                    >
-                      <div className="btn-group h-100">
-                        <Link
-                          to={`/${_base}/Dashboard`}
-                          style={{ width: '100%' }}
-                        >
-                          View All Request
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`col-4 card-footer text-center border-top-0 ${
-                        showApprovedOnly ? 'bg-info' : 'white'
-                      }`}
-                      style={{ width: '50%', height: '50px' }}
-                      onClick={() => setShowApprovedOnly(true)}
-                    >
-                      <div className="btn-group h-100">
-                        <Link
-                          to={`/${_base}/Dashboard`}
-                          style={{ width: '100%' }}
-                        >
-                          Approved Only By Me
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 </div>
-              </Dropdown.Menu>
-            </Dropdown>
-          )}
-
-          <>
-            {approveRequestModal && (
-              <ApproveRequestModal
-                show={approveRequestModal.show}
-                hide={handleCloseApproveRequestModal}
-                data={regularizationRequest && regularizationRequest}
-                ticketId={ticketID}
-                isLoading={isLoading}
-                notificationId={notificationId}
-              />
+              </div>
             )}
-          </>
-
-          <>
-            {historyModal && regularizationRequest && (
-              <TimeRegularizationHistory
-                show={historyModal.show}
-                hide={handleCloseHistoryModal}
-                data={historyData}
-                isLoading={isLoading}
-                setHistoryData={setHistoryData}
-                setHistoryModal={setHistoryModal}
-              />
-            )}
-          </>
-        </div>
-      </div>
-      <div className="row row_gap_3">
-        <div className="col-md-6 col-lg-3">
-          <div className="card bg-danger text-white">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult">
-                  <i className="bi bi-journal-check fs-4"></i>
-                </div>
-                <div className="flex-fill ms-4">
-                  <div className="">
-                    <strong style={{ fontSize: '12px' }}>Pending Task</strong>
-                  </div>
-                  <div>
-                    {count && <h5 className="mb-0 ">{count.pendingTask}</h5>}
-                  </div>
-                </div>
+            {showSecond && (
+              <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6 animate-box">
                 <div
-                  title="view-members"
-                  className="btn btn-link text-decoration-none  rounded-1"
+                  style={{
+                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px',
+                    overflow: 'hidden',
+                    borderRadius: '10px'
+                  }}
+                  className="card "
                 >
-                  <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  <div className="card-header border-bottom bg-primary text-white">
+                    <h5 className="">Upcoming Tasks</h5>
+                  </div>
 
-        <div className="col-md-6 col-lg-3">
-          <div className="card bg-warning text-white">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult">
-                  <i className="bi bi-journal-check fs-4"></i>
-                </div>
-                <div className="flex-fill ms-4">
-                  <div className="">
-                    <strong style={{ fontSize: '12px' }}>Working Task</strong>
-                  </div>
-                  <div>
-                    {count && <h5 className="mb-0 ">{count.workingTask}</h5>}
-                  </div>
-                </div>
-                <div
-                  title="view-members"
-                  className="btn btn-link text-decoration-none  rounded-1"
-                >
-                  <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-6 col-lg-3">
-          <div className="card bg-success text-white">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult">
-                  <i className="bi bi-journal-check fs-4"></i>
-                </div>
-                <div className="flex-fill ms-4">
-                  <div className="">
-                    <strong style={{ fontSize: '12px' }}>Completed Task</strong>
-                  </div>
-                  <div>
-                    {count && <h5 className="mb-0 ">{count.completedTask}</h5>}
-                  </div>
-                </div>
-                <div
-                  title="view-members"
-                  className="btn btn-link text-decoration-none  rounded-1"
-                >
-                  <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-6 col-lg-3">
-          <div className="card bg-info text-white">
-            <div className="card-body">
-              <div className="d-flex align-items-center">
-                <div className="avatar lg  rounded-1 no-thumbnail bg-lightyellow color-defult">
-                  <i className="bi bi-journal-check fs-4"></i>
-                </div>
-                <div className="flex-fill ms-4">
-                  <div className="">
-                    <strong style={{ fontSize: '12px' }}>Total Task</strong>
-                  </div>
-                  <div>
-                    {count && <h5 className="mb-0 ">{count.totalTask}</h5>}
-                  </div>
-                </div>
-                <div
-                  title="view-members"
-                  className="btn btn-link text-decoration-none  rounded-1"
-                >
-                  <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>{' '}
-      <div className="row g-3 mb-3 row-deck mt-2">
-        <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6">
-          <div className="card">
-            <div className="card-header border-bottom text-white bg-primary">
-              <h5 className="">My Tasks</h5>
-            </div>
-            <div className="card-body p-0">
-              <div
-                className="flex-grow-1"
-                style={{ height: '250px', overflowY: 'scroll' }}
-              >
-                {dailyTask &&
-                  dailyTask.length > 0 &&
-                  dailyTask.map((ele, index) => {
-                    if (ele.time_status === 'STOP') {
-                      return (
-                        <div
-                          className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: '#EBF5FB' }}
-                        >
-                          <div className="d-flex align-items-center flex-fill">
-                            <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6
-                                  className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
+                  {dailyTask && dailyTask.length >= 0 ? (
+                    <div className="card-body p-0">
+                      <div
+                        className="flex-grow-1"
+                        style={{ height: '250px', overflowY: 'scroll' }}
+                      >
+                        {upcomingTask &&
+                          upcomingTask.map((ele, index) => {
+                            if (ele.time_status === 'STOP') {
+                              return (
+                                <div
+                                  className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
+                                  style={{ backgroundColor: '#EBF5FB' }}
                                 >
-                                  {index + 1}. {ele.main_ticket_id}-
-                                  {ele.task_name.length < 20
-                                    ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + '....'}
-                                </h6>
-                              </Link>
-                            </div>
-                          </div>
-                          {ele.status !== 'COMPLETED' && (
-                            <button
-                              type="button"
-                              style={{
-                                border: 'none',
-                                borderRadius: '25%',
-                                height: '35px',
-                                width: '35px',
-                                textAlign: 'center',
-                                margin: '0px',
-                                padding: '0px'
-                              }}
-                              title="Stop Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, 'STOP')
-                              }
-                            >
-                              <i
-                                className="icofont-ui-pause"
-                                style={{
-                                  fontSize: '20px',
-                                  color: '#EC7063',
-                                  margin: 'auto'
-                                }}
-                              ></i>
-                            </button>
-                          )}
-
-                          {ele && ele.total_worked && (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.total_worked}
-                            </span>
-                          )}
-
-                          {ele && ele.task_hours && (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.task_hours}
-                            </span>
-                          )}
-
-                          {ele && ele && ele.status === 'TO_DO' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : ele.status === 'IN_PROGRESS' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-warning p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-success p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          )}
-                          <div className="time-block text-truncate ">
-                            {ele.priority === 'Very High' && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'High' && (
-                              <span
-                                className="badge bg-warning p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Medium' && (
-                              <span
-                                className="badge bg-info p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Low' && (
-                              <span
-                                className="badge bg-success p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    } else {
-                      return null;
-                    }
-                  })}
-
-                {dailyTask &&
-                  dailyTask.length > 0 &&
-                  dailyTask.map((ele, index) => {
-                    if (ele.time_status === 'START') {
-                      return (
-                        <div
-                          className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: '#EBF5FB' }}
-                        >
-                          <div className="d-flex align-items-center flex-fill">
-                            <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                {ele.task_name ? (
-                                  <h6
-                                    className="fw-bold mb-0 small-14"
-                                    title={ele.task_name}
+                                  <div className="d-flex align-items-center flex-fill">
+                                    <div className="d-flex flex-column ps-3">
+                                      <Link
+                                        to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                                      >
+                                        <h6 className="fw-bold mb-0 small-14">
+                                          {index + 1}. {ele.main_ticket_id}-
+                                          {ele.task_name.length < 20
+                                            ? ele.task_name
+                                            : ele.task_name.substring(0, 20) +
+                                              '....'}
+                                        </h6>
+                                      </Link>
+                                    </div>
+                                  </div>
+                                  {ele.status !== 'COMPLETED' && (
+                                    <button
+                                      type="button"
+                                      style={{
+                                        border: 'none',
+                                        borderRadius: '25%',
+                                        height: '35px',
+                                        width: '35px',
+                                        textAlign: 'center',
+                                        margin: '0px',
+                                        padding: '0px'
+                                      }}
+                                      title="Stop Task"
+                                      onClick={(e) =>
+                                        handleTimer(
+                                          e,
+                                          ele.ticket_id,
+                                          ele.id,
+                                          'STOP',
+                                          'upcoming_task'
+                                        )
+                                      }
+                                    >
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'upcoming_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-pause"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#EC7063',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
+                                    </button>
+                                  )}
+                                  {ele && ele && ele.status === 'TO_DO' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : ele.status === 'IN_PROGRESS' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-warning p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-success p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  )}
+                                  <span
+                                    className="badge bg-primary p-2"
+                                    style={{
+                                      width: '100px',
+                                      marginRight: '5px'
+                                    }}
                                   >
-                                    {index + 1}. {ele.main_ticket_id}-
-                                    {ele.task_name.length < 20
-                                      ? ele.task_name
-                                      : ele.task_name.substring(0, 20) + '....'}
-                                  </h6>
-                                ) : (
-                                  'NO DATA'
-                                )}
-                              </Link>
-                            </div>
-                          </div>
-                          {ele.status !== 'COMPLETED' && (
-                            <button
-                              type="button"
-                              style={{
-                                border: 'none',
-                                borderRadius: '25%',
-                                height: '35px',
-                                width: '35px',
-                                textAlign: 'center',
-                                margin: '0px',
-                                padding: '0px'
-                              }}
-                              title="Start Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, 'START')
-                              }
-                            >
-                              <i
-                                className="icofont-ui-play"
-                                style={{
-                                  fontSize: '20px',
-                                  color: '#1ABC9C',
-                                  margin: 'auto'
-                                }}
-                              ></i>
-                            </button>
-                          )}
-                          {ele && ele && ele.status === 'TO_DO' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : ele.status === 'IN_PROGRESS' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-warning p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-success p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          )}
+                                    {ele.end_date}
+                                  </span>
+                                  <div className="time-block text-truncate">
+                                    {ele.priority === 'Very High' && (
+                                      <span className="badge bg-danger p-2">
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'High' && (
+                                      <span className="badge bg-danger p-2">
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Medium' && (
+                                      <span className="badge bg-info p-2">
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Low' && (
+                                      <span className="badge bg-success p-2">
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
 
-                          <div className="time-block text-truncate">
-                            {ele.priority === 'Very High' && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'High' && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Medium' && (
-                              <span
-                                className="badge bg-info p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Low' && (
-                              <span
-                                className="badge bg-success p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    } else {
-                      return null;
-                    }
-                  })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6">
-          <div className="card ">
-            <div className="card-header border-bottom bg-primary text-white">
-              <h5 className="">Pending Tasks</h5>
-            </div>
-            <div className="card-body p-0">
-              <div
-                className="flex-grow-1"
-                style={{ height: '250px', overflowY: 'scroll' }}
-              >
-                {previousTask &&
-                  previousTask.length > 0 &&
-                  previousTask.map((ele, index) => {
-                    if (ele.time_status === 'STOP') {
-                      return (
-                        <div
-                          className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: '#EBF5FB' }}
-                        >
-                          <div className="d-flex align-items-center flex-fill">
-                            <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6
-                                  className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
+                        {upcomingTask &&
+                          upcomingTask.map((ele, index) => {
+                            if (ele.time_status === 'START') {
+                              return (
+                                <div
+                                  className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
+                                  style={{ backgroundColor: '#EBF5FB' }}
                                 >
-                                  {index + 1}. {ele.main_ticket_id}-
-                                  {ele.task_name.length < 20
-                                    ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + '....'}
-                                </h6>
-                              </Link>
-                            </div>
-                          </div>
-
-                          {ele.status !== 'COMPLETED' && (
-                            <button
-                              type="button"
-                              style={{
-                                border: 'none',
-                                borderRadius: '25%',
-                                height: '35px',
-                                width: '35px',
-                                textAlign: 'center',
-                                margin: '0px',
-                                padding: '0px'
-                              }}
-                              title="Stop Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, 'STOP')
-                              }
-                            >
-                              <i
-                                className="icofont-ui-pause"
-                                style={{
-                                  fontSize: '20px',
-                                  color: '#EC7063',
-                                  margin: 'auto'
-                                }}
-                              ></i>
-                            </button>
-                          )}
-
-                          {ele && ele.total_worked && (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.total_worked}
-                            </span>
-                          )}
-
-                          {ele && ele.task_hours && (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.task_hours}
-                            </span>
-                          )}
-
-                          {ele && ele && ele.status === 'TO_DO' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : ele.status === 'IN_PROGRESS' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-warning p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-success p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          )}
-                          <span
-                            className="badge bg-primary p-2"
-                            style={{ width: '100px', marginRight: '5px' }}
-                          >
-                            {ele.end_date}
-                          </span>
-
-                          <div className="time-block text-truncate  ">
-                            {ele.priority === 'Very High' && (
-                              <span
-                                className="badge bg-danger"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-
-                            {ele.priority === 'High' && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Medium' && (
-                              <span
-                                className="badge bg-info p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Low' && (
-                              <span
-                                className="badge bg-success p-2"
-                                style={{ width: '100px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    } else {
-                      return null;
-                    }
-                  })}
-
-                {previousTask &&
-                  previousTask.length > 0 &&
-                  previousTask.map((ele, index) => {
-                    if (ele.time_status === 'START') {
-                      return (
-                        <div
-                          className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: '#EBF5FB' }}
-                        >
-                          <div className="d-flex align-items-center flex-fill">
-                            <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6
-                                  className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
-                                >
-                                  {index + 1}. {ele.main_ticket_id}-
-                                  {ele.task_name.length < 20
-                                    ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + '....'}
-                                </h6>
-                              </Link>
-                            </div>
-                          </div>
-                          {ele.status !== 'COMPLETED' && (
-                            <button
-                              type="button"
-                              style={{
-                                border: 'none',
-                                borderRadius: '25%',
-                                height: '35px',
-                                width: '35px',
-                                textAlign: 'center',
-                                margin: '0px',
-                                padding: '0px'
-                              }}
-                              title="Start Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, 'START')
-                              }
-                            >
-                              <i
-                                className="icofont-ui-play"
-                                style={{
-                                  fontSize: '20px',
-                                  color: '#1ABC9C',
-                                  margin: 'auto'
-                                }}
-                              ></i>
-                            </button>
-                          )}
-                          {ele && ele && ele.status === 'TO_DO' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : ele.status === 'IN_PROGRESS' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-warning p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-success p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          )}
-                          <span
-                            className="badge bg-primary p-2"
-                            style={{ width: '80px', marginRight: '5px' }}
-                          >
-                            {ele.end_date}
-                          </span>
-                          <div className="time-block text-truncate">
-                            {ele.priority === 'Very High' && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: '80px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'High' && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: '80px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Medium' && (
-                              <span
-                                className="badge bg-info p-2"
-                                style={{ width: '80px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Low' && (
-                              <span
-                                className="badge bg-success p-2"
-                                style={{ width: '80px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    } else {
-                      return null;
-                    }
-                  })}
+                                  <div className="d-flex align-items-center flex-fill">
+                                    <div className="d-flex flex-column ps-3">
+                                      <Link
+                                        to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
+                                      >
+                                        <h6
+                                          className="fw-bold mb-0 small-14 task-name"
+                                          title={ele.task_name}
+                                        >
+                                          {index + 1}. {ele.main_ticket_id}-
+                                          {ele.task_name.length < 20
+                                            ? ele.task_name
+                                            : ele.task_name.substring(0, 20) +
+                                              '....'}
+                                        </h6>
+                                      </Link>
+                                    </div>
+                                  </div>
+                                  {ele.status !== 'COMPLETED' && (
+                                    <button
+                                      type="button"
+                                      style={{
+                                        border: 'none',
+                                        borderRadius: '25%',
+                                        height: '35px',
+                                        width: '35px',
+                                        textAlign: 'center',
+                                        margin: '0px',
+                                        padding: '0px'
+                                      }}
+                                      title="Start Task"
+                                      onClick={(e) =>
+                                        handleTimer(
+                                          e,
+                                          ele.ticket_id,
+                                          ele.id,
+                                          'START',
+                                          'upcoming_task'
+                                        )
+                                      }
+                                    >
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'upcoming_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-play"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#1ABC9C',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
+                                    </button>
+                                  )}
+                                  {ele && ele && ele.status === 'TO_DO' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-danger p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : ele.status === 'IN_PROGRESS' ? (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-warning p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        width: '80px',
+                                        marginRight: '5px'
+                                      }}
+                                      className="badge bg-success p-2"
+                                    >
+                                      {ele.status}
+                                    </span>
+                                  )}
+                                  <span
+                                    className="badge bg-primary p-2"
+                                    style={{
+                                      width: '80px',
+                                      marginRight: '5px'
+                                    }}
+                                  >
+                                    {ele.end_date}
+                                  </span>
+                                  <div className="time-block text-truncate">
+                                    {ele.priority === 'Very High' && (
+                                      <span
+                                        className="badge bg-danger p-2"
+                                        style={{ width: '80px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'High' && (
+                                      <span
+                                        className="badge bg-danger p-2"
+                                        style={{ width: '80px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Medium' && (
+                                      <span
+                                        className="badge bg-info p-2"
+                                        style={{ width: '80px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                    {ele.priority === 'Low' && (
+                                      <span
+                                        className="badge bg-success p-2"
+                                        style={{ width: '80px' }}
+                                      >
+                                        {ele.priority}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
+                      </div>
+                    </div>
+                  ) : (
+                    <CustomeLoaderDashboard />
+                  )}
+                </div>
               </div>
-            </div>
+            )}
+            {/* <ChatBot /> */}
           </div>
-        </div>
-      </div>
-      <div className="row g-3 mb-3 row-deck ">
-        <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6">
-          <div className="card ">
-            <div className="card-header border-bottom text-white bg-primary">
-              <h5 className=" ">Work Analysis</h5>
-            </div>
-            <div className="card-body p-0">
-              <div
-                className="flex-grow-1"
-                style={{ height: '250px', overflowY: 'scroll' }}
-              >
-                {chartData && chartData.series && (
-                  <Chart
-                    options={chartData.options}
-                    series={chartData?.series}
-                    type="donut"
-                    height="250"
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6">
-          <div className="card ">
-            <div className="card-header border-bottom bg-primary text-white">
-              <h5 className="">Upcoming Tasks</h5>
-            </div>
-            <div className="card-body p-0">
-              <div
-                className="flex-grow-1"
-                style={{ height: '250px', overflowY: 'scroll' }}
-              >
-                {upcomingTask &&
-                  upcomingTask.map((ele, index) => {
-                    if (ele.time_status === 'STOP') {
-                      return (
-                        <div
-                          className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: '#EBF5FB' }}
-                        >
-                          <div className="d-flex align-items-center flex-fill">
-                            <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6 className="fw-bold mb-0 small-14">
-                                  {index + 1}. {ele.main_ticket_id}-
-                                  {ele.task_name.length < 20
-                                    ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + '....'}
-                                </h6>
-                              </Link>
-                            </div>
-                          </div>
-                          {ele.status !== 'COMPLETED' && (
-                            <button
-                              type="button"
-                              style={{
-                                border: 'none',
-                                borderRadius: '25%',
-                                height: '35px',
-                                width: '35px',
-                                textAlign: 'center',
-                                margin: '0px',
-                                padding: '0px'
-                              }}
-                              title="Stop Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, 'STOP')
-                              }
-                            >
-                              <i
-                                className="icofont-ui-pause"
-                                style={{
-                                  fontSize: '20px',
-                                  color: '#EC7063',
-                                  margin: 'auto'
-                                }}
-                              ></i>
-                            </button>
-                          )}
-                          {ele && ele && ele.status === 'TO_DO' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : ele.status === 'IN_PROGRESS' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-warning p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-success p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          )}
-                          <span
-                            className="badge bg-primary p-2"
-                            style={{ width: '100px', marginRight: '5px' }}
-                          >
-                            {ele.end_date}
-                          </span>
-                          <div className="time-block text-truncate">
-                            {ele.priority === 'Very High' && (
-                              <span className="badge bg-danger p-2">
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'High' && (
-                              <span className="badge bg-danger p-2">
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Medium' && (
-                              <span className="badge bg-info p-2">
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Low' && (
-                              <span className="badge bg-success p-2">
-                                {ele.priority}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    } else {
-                      return null;
-                    }
-                  })}
-
-                {upcomingTask &&
-                  upcomingTask.map((ele, index) => {
-                    if (ele.time_status === 'START') {
-                      return (
-                        <div
-                          className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: '#EBF5FB' }}
-                        >
-                          <div className="d-flex align-items-center flex-fill">
-                            <div className="d-flex flex-column ps-3">
-                              <Link
-                                to={`/${_base}/Ticket/Task/${ele.ticket_id}`}
-                              >
-                                <h6
-                                  className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
-                                >
-                                  {index + 1}. {ele.main_ticket_id}-
-                                  {ele.task_name.length < 20
-                                    ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + '....'}
-                                </h6>
-                              </Link>
-                            </div>
-                          </div>
-                          {ele.status !== 'COMPLETED' && (
-                            <button
-                              type="button"
-                              style={{
-                                border: 'none',
-                                borderRadius: '25%',
-                                height: '35px',
-                                width: '35px',
-                                textAlign: 'center',
-                                margin: '0px',
-                                padding: '0px'
-                              }}
-                              title="Start Task"
-                              onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, 'START')
-                              }
-                            >
-                              <i
-                                className="icofont-ui-play"
-                                style={{
-                                  fontSize: '20px',
-                                  color: '#1ABC9C',
-                                  margin: 'auto'
-                                }}
-                              ></i>
-                            </button>
-                          )}
-                          {ele && ele && ele.status === 'TO_DO' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-danger p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : ele.status === 'IN_PROGRESS' ? (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-warning p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          ) : (
-                            <span
-                              style={{ width: '80px', marginRight: '5px' }}
-                              className="badge bg-success p-2"
-                            >
-                              {ele.status}
-                            </span>
-                          )}
-                          <span
-                            className="badge bg-primary p-2"
-                            style={{ width: '80px', marginRight: '5px' }}
-                          >
-                            {ele.end_date}
-                          </span>
-                          <div className="time-block text-truncate">
-                            {ele.priority === 'Very High' && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: '80px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'High' && (
-                              <span
-                                className="badge bg-danger p-2"
-                                style={{ width: '80px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Medium' && (
-                              <span
-                                className="badge bg-info p-2"
-                                style={{ width: '80px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                            {ele.priority === 'Low' && (
-                              <span
-                                className="badge bg-success p-2"
-                                style={{ width: '80px' }}
-                              >
-                                {ele.priority}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    } else {
-                      return null;
-                    }
-                  })}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 }

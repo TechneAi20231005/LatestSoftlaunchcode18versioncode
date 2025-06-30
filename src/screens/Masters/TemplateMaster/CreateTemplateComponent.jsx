@@ -23,6 +23,8 @@ import { handleModalClose, handleModalOpen } from './TemplateComponetSlice';
 
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 const CreateTemplateComponent = () => {
   const navigate = useNavigate();
@@ -45,7 +47,6 @@ const CreateTemplateComponent = () => {
   const editTaskModal = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.modal
   );
-  const [notify, setNotify] = useState(null);
 
   const [selectedBasket, setSelectedBasket] = useState();
   const [rows, setRows] = useState({
@@ -65,9 +66,9 @@ const CreateTemplateComponent = () => {
   const [taskData, setTaskData] = useState([]);
 
   const loadData = async () => {
-    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+    await new TaskTicketTypeService()?.getChildrenData('TASK')?.then((res) => {
       if (res?.status === 200) {
-        setTaskData(res?.data?.data);
+        setTaskData(res?.data?.data?.data);
       }
     });
   };
@@ -118,6 +119,7 @@ const CreateTemplateComponent = () => {
     setSelectedOptions(selectedOptions === label ? null : label);
     setSelectedOptionId(label);
     setIsMenuOpen(!isMenuOpen);
+    setParentTaskName('');
   };
   const handleSelectOptionClick = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -361,92 +363,104 @@ const CreateTemplateComponent = () => {
       });
     }
   };
-  const submitHandler = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+  const submitHandler = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+
     let a = 0;
-    rows.template_data.forEach((ele, id) => {
+    rows.template_data.forEach((ele) => {
       if (ele.basket_task.length === 0) {
         a++;
       }
     });
-    if (a > 0) {
-    } else {
-      dispatch(postTemplateData(rows)).then((res) => {
-        if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
-          setNotify({ type: 'success', message: res?.payload?.data?.message });
-          dispatch(templateData());
 
-          setTimeout(() => {
-            navigate(`/${_base}/Template`, {
-              state: {
-                alert: {
-                  type: 'success',
-                  message: res?.payload?.data?.message
-                }
-              }
-            });
-          }, 3000);
-        } else {
-          setNotify({ type: 'danger', message: res?.payload?.data?.message });
-        }
-      });
+    if (a > 0) {
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const res = await dispatch(postTemplateData(rows));
+
+      if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
+        navigate(`/${_base}/Template`);
+      } else {
+        // toast.error(res.payload.data.message);
+      }
+      setSubmitting(false);
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
+  const [parentTaskName, setParentTaskName] = useState(null);
 
   const addTask = (e) => {
     e.preventDefault();
+    if (!selectedOptions) {
+      setParentTaskName('Please select a parent task type.');
+    } else {
+      setParentTaskName(''); // Clear the error message if present
 
-    const hoursInput = document.getElementById('hours_add');
-    const enteredValue = hoursInput.value.trim();
-    const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
+      if (submitting) return;
+      setSubmitting(true);
+      const hoursInput = document.getElementById('hours_add');
+      const enteredValue = hoursInput.value.trim();
+      const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
 
-    if (!timeRegex.test(enteredValue)) {
-      // If the format is invalid, show an alert or handle it accordingly
-      alert("Invalid time format. Please use 'HH:mm' format");
-      return; // Prevent further execution of the function
+      if (!timeRegex.test(enteredValue)) {
+        // If the format is invalid, show an alert or handle it accordingly
+        alert("Invalid time format. Please use 'HH:mm' format");
+        return; // Prevent further execution of the function
+      }
+
+      var form = new FormData(e.target);
+      var temp = {
+        task_name: form.get('taskName'),
+
+        total_time: form.get('hours'),
+        days: form.get('days'),
+        start_days: form.get('start_days'),
+        task_type_id: selectedOptionId
+      };
+
+      var basket_id = form.get('basket_id');
+
+      var tempData = rows;
+      tempData.template_data[basket_id].basket_task.push(temp);
+
+      setRows(null);
+      setRows(tempData);
+
+      for (
+        var i = 0;
+        i < document.getElementsByClassName('taskField').length;
+        i++
+      ) {
+        document.getElementsByClassName('taskField')[i].value = '';
+      }
+      if (typeRef && typeRef?.current?.commonProps?.hasValue === true) {
+        typeRef.current.clearValue();
+      }
+      if (document.getElementById('task_add').value !== '') {
+        document.getElementById('task_add').value = '';
+      }
+      if (document.getElementById('days_add').value !== '') {
+        document.getElementById('days_add').value = '';
+      }
+      if (document.getElementById('hours_add').value !== '') {
+        document.getElementById('hours_add').value = '';
+      }
+      if (document.getElementById('start_days').value !== '') {
+        document.getElementById('start_days').value = '';
+      }
+      setShow(false);
+      setSubmitting(false);
     }
-
-    var form = new FormData(e.target);
-    var temp = {
-      task_name: form.get('taskName'),
-
-      total_time: form.get('hours'),
-      days: form.get('days'),
-      start_days: form.get('start_days'),
-      task_type_id: selectedOptionId
-    };
-
-    var basket_id = form.get('basket_id');
-
-    var tempData = rows;
-    tempData.template_data[basket_id].basket_task.push(temp);
-
-    setRows(null);
-    setRows(tempData);
-
-    for (
-      var i = 0;
-      i < document.getElementsByClassName('taskField').length;
-      i++
-    ) {
-      document.getElementsByClassName('taskField')[i].value = '';
-    }
-    if (typeRef && typeRef?.current?.commonProps?.hasValue === true) {
-      typeRef.current.clearValue();
-    }
-    if (document.getElementById('task_add').value !== '') {
-      document.getElementById('task_add').value = '';
-    }
-    if (document.getElementById('days_add').value !== '') {
-      document.getElementById('days_add').value = '';
-    }
-    if (document.getElementById('hours_add').value !== '') {
-      document.getElementById('hours_add').value = '';
-    }
-    if (document.getElementById('start_days').value !== '') {
-      document.getElementById('start_days').value = '';
-    }
-    setShow(false);
   };
 
   const handleCancelTask = (e) => {
@@ -486,9 +500,9 @@ const CreateTemplateComponent = () => {
 
   useEffect(() => {
     loadData();
-    if (!parent.length) {
-      dispatch(getParentData());
-    }
+    // if (!parent.length) {
+    //   dispatch(getParentData());
+    // }
     if (!userData.length) {
       const inputRequired =
         'id,employee_id,first_name,last_name,middle_name,is_active';
@@ -501,12 +515,11 @@ const CreateTemplateComponent = () => {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Template Master" />
       <div className="row clearfix g-3">
         <div className="col-sm-12">
@@ -595,6 +608,7 @@ const CreateTemplateComponent = () => {
                             <td>
                               {userData && (
                                 <Select
+                                  classNamePrefix="react-select"
                                   required={true}
                                   options={userData}
                                   id="basket_owner"
@@ -645,7 +659,11 @@ const CreateTemplateComponent = () => {
                 </div>
 
                 <div className="pull-right">
-                  <button type="submit" class="btn btn-sm btn-primary">
+                  <button
+                    disabled={submitting}
+                    type="submit"
+                    class="btn btn-sm btn-primary"
+                  >
                     Submit
                   </button>
                   <Link to={`/${_base}/Template`} class="btn btn-sm btn-danger">
@@ -669,6 +687,7 @@ const CreateTemplateComponent = () => {
                         type="button"
                         class="btn btn-sm btn-primary"
                         onClick={(e) => {
+                          setSelectedOptions(null);
                           showHandler();
                           setSelectedBasket(null);
                           setSelectedBasket(basketIndex);
@@ -729,9 +748,10 @@ const CreateTemplateComponent = () => {
                         <p className="p-0 m-0">
                           <b>Task Type Name : </b>
                           {
-                            taskTypeDropdown.find(
-                              (item) => item.value === task.task_type_id
-                            )?.label
+                            task?.task_type_id
+                            // taskTypeDropdown.find(
+                            //   (item) => item.value === task.task_type_id
+                            // )?.label
                           }
                         </p>
 
@@ -897,8 +917,8 @@ const CreateTemplateComponent = () => {
                                         handleSelectOptionClick(e)
                                       }
                                     >
-                                      {selectedOptions
-                                        ? selectedOptions
+                                      {editTaskModal?.modalData?.task_type_id
+                                        ? editTaskModal?.modalData?.task_type_id
                                         : 'Select an option'}
                                     </div>
                                     {isMenuOpen && (
@@ -1003,6 +1023,7 @@ const CreateTemplateComponent = () => {
                               <Modal.Footer>
                                 <div>
                                   <button
+                                    disabled={submitting}
                                     type="button"
                                     onClick={(e) => {
                                       // Validate the "Hours Required" field
@@ -1171,7 +1192,17 @@ const CreateTemplateComponent = () => {
                                     />
                                   </div>
                                 )}
+                                {parentTaskName && (
+                                  <small
+                                    style={{
+                                      color: 'red'
+                                    }}
+                                  >
+                                    {parentTaskName}
+                                  </small>
+                                )}
                               </div>
+
                               {/* </div> */}
 
                               {/* <label>

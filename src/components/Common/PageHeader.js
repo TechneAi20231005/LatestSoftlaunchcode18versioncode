@@ -3,8 +3,15 @@ import { Nav } from 'react-bootstrap';
 import './style.scss';
 class PageHeader extends React.Component {
   render() {
-    const { headerTitle, isTabShow, renderRight, paddingStart, showBackBtn } =
-      this.props;
+    const {
+      headerTitle,
+      isTabShow,
+      renderRight,
+      paddingStart,
+      showBackBtn,
+      isremove = false,
+      handleBack
+    } = this.props;
 
     return (
       <div
@@ -12,7 +19,7 @@ class PageHeader extends React.Component {
         // style={{ marginTop: '-40px' }}
       >
         <div className="border-0">
-          <div className="card-header no-bg bg-transparent d-md-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+          <div className=" no-bg bg-transparent d-md-flex align-items-center px-0 justify-content-between  flex-wrap">
             <h3
               className={`fw-bold mb-0 text_primary ps-${paddingStart} d-flex align-items-center`}
             >
@@ -22,7 +29,14 @@ class PageHeader extends React.Component {
                   onClick={() => window.history.back()}
                 />
               )}
-              <span> {headerTitle}</span>
+              {isremove && (
+                <i
+                  className="icofont-simple-left fs-2 back_icon_btn"
+                  onClick={handleBack}
+                />
+              )}
+
+              <span className="hover-underline"> {headerTitle} </span>
             </h3>
             {isTabShow ? (
               <div className="col-auto py-2 w-sm-100">

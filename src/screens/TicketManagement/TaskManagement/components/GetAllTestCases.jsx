@@ -336,7 +336,7 @@ const GetAllTestCases = () => {
   // })
 
   const useSessionData = {
-    userId: sessionStorage.getItem('id')
+    userId: localStorage.getItem('id')
   };
 
   const [iterationCount, setIterationCount] = useState();
@@ -1569,6 +1569,7 @@ const GetAllTestCases = () => {
                     </label>
                     {ba && (
                       <Select
+                        classNamePrefix="react-select"
                         className="form-control"
                         name="user_id[]"
                         id="user_id"
@@ -1630,6 +1631,7 @@ const GetAllTestCases = () => {
                     <b>Task Name:</b>
                   </label>
                   <Select
+                    classNamePrefix="react-select"
                     className="form-control form-control-sm-6"
                     id="task_id"
                     name="task_id"
@@ -1645,6 +1647,7 @@ const GetAllTestCases = () => {
                   </label>
                   {testingTypeDropdown && (
                     <Select
+                      classNamePrefix="react-select"
                       type="text"
                       className="form-control form-control-sm"
                       id="testing_type"

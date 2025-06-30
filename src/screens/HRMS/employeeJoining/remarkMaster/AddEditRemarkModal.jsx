@@ -5,30 +5,43 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
-import { CustomInput, CustomRadioButton } from '../../../../components/custom/inputs/CustomInputs';
+import {
+  CustomInput,
+  CustomRadioButton
+} from '../../../../components/custom/inputs/CustomInputs';
 import { addEditRemarkValidation } from './validation/addEditRemark';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
 import { RenderIf } from '../../../../utils';
 import {
   addRemarkMasterThunk,
   editRemarkMasterThunk,
-  getRemarkMasterListThunk,
+  getRemarkMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/remarkMaster';
 
-function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
+function AddEditRemarkModal({
+  show,
+  close,
+  type,
+  currentRemarkData,
+  clearFilters
+}) {
   // // initial state
   const dispatch = useDispatch();
   const addEditRemarkInitialValue = {
-    remark_description: type === 'EDIT' ? currentRemarkData?.remark_description : '',
+    remark_description:
+      type === 'EDIT' ? currentRemarkData?.remark_description : '',
     supporting_remark: type === 'EDIT' ? currentRemarkData?.remark || '' : '',
-    is_active: type === 'EDIT' ? currentRemarkData?.is_active?.toString() : 1,
+    is_active: type === 'EDIT' ? currentRemarkData?.is_active?.toString() : 1
   };
 
   // // redux state
-  const { isLoading } = useSelector(state => state?.remarkMaster);
+  const { isLoading } = useSelector((state) => state?.remarkMaster);
 
   // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
+  const [openConfirmModal, setOpenConfirmModal] = useState({
+    open: false,
+    formData: ''
+  });
 
   // // function
   const handelAddEditRemark = () => {
@@ -40,11 +53,12 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getRemarkMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
-        }),
+          }
+        })
       );
     } else {
       dispatch(
@@ -55,23 +69,28 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getRemarkMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
-        }),
+          }
+        })
       );
     }
   };
 
   return (
     <>
-      <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Remark`} width="md">
+      <CustomModal
+        show={show}
+        title={`${type === 'ADD' ? 'Add' : 'Edit'} Remark`}
+        width="md"
+      >
         <Formik
           initialValues={addEditRemarkInitialValue}
           enableReinitialize
           validationSchema={addEditRemarkValidation}
-          onSubmit={values => {
+          onSubmit={(values) => {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
@@ -83,6 +102,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
                     component={CustomInput}
                     name="remark_description"
                     label="Remark Description"
+                    id="remarkmaster_description"
                     placeholder="Enter Remark Description"
                     requiredField
                   />
@@ -92,6 +112,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
                     component={CustomInput}
                     name="supporting_remark"
                     label="Supporting Remark"
+                    id="remarkmaster_remark"
                     placeholder="Enter Supporting Remark"
                   />
                 </Col>
@@ -106,6 +127,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
                     type="radio"
                     name="is_active"
                     label="Active"
+                    id="remarkmaster_active"
                     value="1"
                     inputClassName="me-1"
                   />
@@ -114,6 +136,7 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
                     type="radio"
                     name="is_active"
                     label="Deactive"
+                    id="remarkmaster_deactive"
                     value="0"
                     inputClassName="me-1"
                   />
@@ -121,10 +144,18 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
               </RenderIf>
 
               <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                <button
+                  className="btn btn-primary px-4"
+                  type="submit"
+                  disabled={!dirty}
+                >
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
-                <button onClick={close} className="btn btn-shadow-light px-3" type="button">
+                <button
+                  onClick={close}
+                  className="btn btn-danger px-3"
+                  type="button"
+                >
                   Cancel
                 </button>
               </div>
@@ -137,7 +168,9 @@ function AddEditRemarkModal({ show, close, type, currentRemarkData }) {
       <CustomAlertModal
         show={openConfirmModal?.open}
         type="success"
-        message={`Do you want to ${type === 'ADD' ? 'save' : 'update'} this record?`}
+        message={`Do you want to ${
+          type === 'ADD' ? 'save' : 'update'
+        } this record?`}
         onSuccess={handelAddEditRemark}
         onClose={() => setOpenConfirmModal({ open: false })}
         isLoading={isLoading?.addRemarkMaster || isLoading?.editRemarkMaster}

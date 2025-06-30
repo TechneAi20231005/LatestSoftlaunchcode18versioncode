@@ -90,9 +90,8 @@ export function ButtonComponent(props) {
         <button
           type="submit"
           to={props.url}
-          className="btn btn-primary"
+          className="btn btn-sm btn-primary"
           title={props.title}
-          style={{ background: '#484c7f' }}
           disabled={props.disabled ? true : false}
         >
           {props.icon &&
@@ -271,6 +270,7 @@ export function ReactSelectComponent(props) {
       id={props.id}
       name={props.name}
       options={options}
+      classNamePrefix="react-select"
       isMulti={props.isMulti} // Add the isMulti prop here
       onChange={(selectedOption) => {
         if (props.getInputValue) {

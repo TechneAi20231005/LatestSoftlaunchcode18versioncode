@@ -5,7 +5,7 @@ import { Col, Form, Row } from 'react-bootstrap';
 // // static import
 import {
   CustomReactDatePicker,
-  CustomReactSelect,
+  CustomReactSelect
 } from '../../../components/custom/inputs/CustomInputs';
 import CustomModal from '../../../components/custom/modal/CustomModal';
 
@@ -16,14 +16,14 @@ function PoOrderQanFilterModal({ open, onClose }) {
     { label: 'vender 1', value: 'vender_1' },
     { label: 'vender 2', value: 'vender_2' },
     { label: 'vender 3', value: 'vender_3' },
-    { label: 'vender_3_vender_1_vender_2', value: 'vender_4' },
+    { label: 'vender_3_vender_1_vender_2', value: 'vender_4' }
   ];
   const categoryData = [
     { label: 'Select', value: '' },
     { label: 'category 1', value: 'category_1' },
     { label: 'category 2', value: 'category_2' },
     { label: 'category 3', value: 'category_3' },
-    { label: 'category_3_category_1_category_2', value: 'category_4' },
+    { label: 'category_3_category_1_category_2', value: 'category_4' }
   ];
   return (
     <>
@@ -31,7 +31,7 @@ function PoOrderQanFilterModal({ open, onClose }) {
         <Formik
           initialValues={{ delivery_date: [], category: [], vender_name: [] }}
           enableReinitialize
-          onSubmit={values => {
+          onSubmit={(values) => {
             console.log(values);
           }}
         >
@@ -44,12 +44,13 @@ function PoOrderQanFilterModal({ open, onClose }) {
                     type="date"
                     name="delivery_date"
                     label="Delivery Date :"
+                    id="poorderqtyfiltermodal_deliverydate"
                     placeholderText="dd/mm/yyyy"
                     dateFormat="dd/MM/yyy"
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
-                    onKeyDown={e => {
+                    onKeyDown={(e) => {
                       e.preventDefault();
                     }}
                     isClearable
@@ -58,10 +59,12 @@ function PoOrderQanFilterModal({ open, onClose }) {
                 </Col>
                 <Col sm={12}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={categoryData}
                     name="vender_name"
                     label="Vendor Name :"
+                    id="poorderqtyfiltermodal_vendorname"
                     placeholder="Select"
                     isSearchable
                     isMulti
@@ -69,10 +72,12 @@ function PoOrderQanFilterModal({ open, onClose }) {
                 </Col>
                 <Col sm={12}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"
                     label="Vendor Name :"
+                    id="poorderqtyfiltermodal_vendorname"
                     placeholder="Select"
                     isSearchable
                     isMulti
@@ -88,7 +93,11 @@ function PoOrderQanFilterModal({ open, onClose }) {
                 >
                   <i className="icofont-refresh text-white" /> Reset
                 </button>
-                <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
+                <button
+                  className="btn btn-warning text-white"
+                  type="submit"
+                  disabled={!dirty}
+                >
                   <i className="icofont-search-1 " /> Search
                 </button>
               </div>

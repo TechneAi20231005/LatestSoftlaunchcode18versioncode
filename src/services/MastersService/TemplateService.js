@@ -1,162 +1,141 @@
-import axios from "axios";
-import { masterURL, userSessionData } from "../../settings/constants";
+import axios from 'axios';
+import { masterURL, userSessionData } from '../../settings/constants';
 
 const _URL = masterURL.template;
-const _getAllTemplate = _URL + "/getAllTemplate";
-const _createTemplate = _URL + "/createTemplate";
-const _getTemplateById = _URL + "/getTemplateById/";
-const _exportData = _URL + "/getTemplateExport";
-const _updateTemplate = _URL + "/updateTemplate/";
+const _getAllTemplate = _URL + '/getTemplateData?export=1';
+const _createTemplate = _URL + '/postData';
+const _getTemplateById = _URL + '/getTemplateById/';
+const _exportData = _URL + '/getTemplateExport?export=1';
+const _updateTemplate = _URL + '/updateTemplate/';
 
-const _updateTask = _URL + "/updateTask/";
-const _deleteTask = _URL + "/deleteTask/";
-const _addBasket =_URL + "/createBasket/";
-const _addTask =_URL + "/createTask/" ;
+const _updateTask = _URL + '/createTask/updateTask/';
+const _deleteTask = _URL + '/deleteTask/';
+const _addBasket = _URL + '/createBasket/createBasket/';
+const _addTask = _URL + '/createTask/createTask/';
 export default class TemplateService {
   getTemplate() {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_getAllTemplate, config);
   }
 
   exporttempData() {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_exportData, config);
   }
 
   postTemplate(payload) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(_createTemplate,payload, config);
+    return axios.post(_createTemplate, payload, config);
   }
 
   getTemplateById(id) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
     return axios.get(_getTemplateById + id, config);
   }
 
   updateTemplate(id, payload) {
-   
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(
-      _createTemplate +"/"+ id,
-      payload,
-      config
-    );
+    return axios.post(_createTemplate + '/' + id, payload, config);
   }
 
   updateTask(id, payload) {
     payload = {
       ...payload,
       updated_by: userSessionData.userId,
-      updated_at: userSessionData.time,
+      updated_at: userSessionData.time
     };
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(
-      _updateTask + id,
-      payload,
-      config
-    );
+    return axios.post(_updateTask + id, payload, config);
   }
-  addBasketinEdit(id,payload){
-    const token = localStorage.getItem("jwt_token");
+  addBasketinEdit(id, payload) {
+    const token = localStorage.getItem('jwt_token');
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(
-      _addBasket + id,
-      payload,
-      config
-    );
+    return axios.post(_addBasket + id, payload, config);
   }
 
-  addTaskinBasket(templateId,basketId,payload){
-    const token = localStorage.getItem("jwt_token");
+  addTaskinBasket(templateId, basketId, payload) {
+    const token = localStorage.getItem('jwt_token');
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(
-      _addTask + templateId +"/" +basketId,
-      payload,
-      config
-    );
+    return axios.post(_addTask + basketId, payload, config);
   }
   deleteTask(id, payload) {
     payload = {
       ...payload,
       updated_by: userSessionData.userId,
-      updated_at: userSessionData.time,
+      updated_at: userSessionData.time
     };
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(
-      _deleteTask + id,
-      payload,
-      config
-    );
+    return axios.post(_deleteTask + id, payload, config);
   }
 }
 

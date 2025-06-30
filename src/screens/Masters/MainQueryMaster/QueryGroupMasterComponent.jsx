@@ -14,6 +14,8 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import MainQueryService from '../../../services/MastersService/MainQueryService';
 import { Spinner } from 'react-bootstrap';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 function QueryGroupMasterComponent() {
   const [notify, setNotify] = useState(null);
@@ -28,7 +30,7 @@ function QueryGroupMasterComponent() {
     modalHeader: ''
   });
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
 
   const [exportData, setExportData] = useState(null);
@@ -181,16 +183,21 @@ function QueryGroupMasterComponent() {
       }
     });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        setShowLoaderModal(false);
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res.status === 200) {
+          setShowLoaderModal(false);
 
-        if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
+          if (res.data.status === 1) {
+            const getRoleId = localStorage.getItem('role_id');
+            setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [roleId]);
 
   const handleForm = (id) => async (e) => {
@@ -209,10 +216,10 @@ function QueryGroupMasterComponent() {
 
             if (res.data.status === 1) {
               setModal({ showModal: false, modalData: '', modalHeader: '' });
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message);
               loadData();
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           } else {
             setNotify({ type: 'danger', message: res.message });
@@ -225,16 +232,7 @@ function QueryGroupMasterComponent() {
           }
         })
         .catch((error) => {
-          setNotify({ type: 'danger', message: 'Connection Error !!!' });
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Remark Error !!!' });
-          new ErrorLogService().sendErrorLog(
-            'QueryType',
-            'Create_QueryType',
-            'INSERT',
-            errorObject.data.message
-          );
+          errorHandler(error);
         });
     } else {
       await new MainQueryService()
@@ -245,13 +243,13 @@ function QueryGroupMasterComponent() {
 
             if (res.data.status === 1) {
               setModal({ showModal: false, modalData: '', modalHeader: '' });
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message);
               loadData();
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            toast.error(res.data.message);
             new ErrorLogService().sendErrorLog(
               'QueryType',
               'Edit_QueryType',
@@ -261,15 +259,7 @@ function QueryGroupMasterComponent() {
           }
         })
         .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Remark Error !!!' });
-          new ErrorLogService().sendErrorLog(
-            'QueryType',
-            'Edit_QueryType',
-            'INSERT',
-            errorObject.data.message
-          );
+          errorHandler(error);
         });
     }
   };
@@ -288,13 +278,12 @@ function QueryGroupMasterComponent() {
     if (checkRole && checkRole[38].can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Main Query Master"
         renderRight={() => {
@@ -434,6 +423,7 @@ function QueryGroupMasterComponent() {
                     Query Type :
                   </label>
                   <Select
+                    classNamePrefix="react-select"
                     options={QueryTypeDropdown}
                     id="form_id"
                     name="form_id"

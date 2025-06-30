@@ -1,27 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
-
 import StatusService from '../../../services/MastersService/StatusService';
 import PageHeader from '../../../components/Common/PageHeader';
-
-import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getStatusData,
   postStatusData,
-  updateStatusData
+  updateStatusData,
+  getGridStatusData
 } from './StatusComponentAction';
 
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './StatusComponentSlice';
-
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function StatusComponent() {
   const dispatch = useDispatch();
@@ -32,162 +27,209 @@ function StatusComponent() {
     (statusMasterSlice) => statusMasterSlice.statusMaster.isLoading.statusData
   );
 
-  const exportData = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.exportStatusData
-  );
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 11)
   );
   const modal = useSelector(
     (statusMasterSlice) => statusMasterSlice.statusMaster.modal
   );
-  const notify = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.notify
-  );
 
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(statusData, searchTerm);
-    setFilteredData(filteredList);
-  }, [statusData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(statusData);
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
   };
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalOpen({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Edit Status'
-                })
-              );
-            }}
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => {
+        const disabledStatuses = {
+          unsolved: true,
+          'in progress': true,
+          solved: true
+        };
+
+        return (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleModalOpen({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit Status'
+                  })
+                );
+              }}
+              disabled={disabledStatuses[row?.original?.status?.toLowerCase()]}
+            >
+              <i className="icofont-edit text-success" />
+            </button>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
+    },
+    {
+      accessorFn: (originalRow) => originalRow.status || '--',
+      header: 'Status Name',
+      size: 200,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
+    },
+    {
+      header: 'Status',
+      size: 160,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
           >
-            <i className="icofont-edit text-success" />
-          </button>
-        </div>
-      )
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at),
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Status Name',
-      selector: (row) => row.status,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
+    }
+  ];
+  const initialValues = {
+    status: modal.modalData ? modal.modalData.status : '',
+    remark: modal?.modalData?.remark || '',
+    is_active: String(modal?.modalData?.is_active) ?? '1'
+  };
+
+  const fields = [
+    {
+      name: 'status',
+      label: 'Status name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      name: 'remark',
+      label: 'Remark',
+      max: 255,
+      required: false,
+      alphaNumeric: true
     }
   ];
 
-  const loadData = async () => {};
+  const validationSchema = CustomValidation(fields);
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
-    // setNotify(null);
-    const form = new FormData(e.target);
-    if (!id) {
-      dispatch(postStatusData(form));
-      dispatch(getStatusData());
-    } else {
-      dispatch(updateStatusData({ id: id, payload: form }));
-      dispatch(getStatusData());
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
+    const formData = new FormData();
+    formData.append('status', values.status);
+    formData.append('remark', values.remark);
+
+    const editformdata = new FormData();
+    editformdata.append('status', values.status);
+    editformdata.append('remark', values.remark);
+    editformdata.append('is_active', values.is_active);
+
+    try {
+      if (!id) {
+        await dispatch(postStatusData(formData));
+        setTimeout(() => {
+          dispatch(getGridStatusData());
+          clearFilters();
+        }, 500);
+      } else {
+        await dispatch(updateStatusData({ id: id, payload: editformdata }));
+
+        setTimeout(() => {
+          dispatch(getGridStatusData());
+          clearFilters();
+        }, 500);
+      }
+    } catch (error) {
+      errorHandler(error);
+      clearFilters();
+    } finally {
+      setSubmitting(false);
     }
   };
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
   useEffect(() => {
-    loadData();
-    dispatch(getStatusData());
+    dispatch(getGridStatusData());
 
     if (!statusData.length) {
       dispatch(getRoles());
     }
   }, [dispatch, statusData.length]);
-  useEffect(() => {
-    setFilteredData(statusData);
-  }, [statusData]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-
+  const exportDataKeys = {
+    status: 'Status Name',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Status Master Record'
+  };
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Status Master"
         renderRight={() => {
@@ -215,36 +257,18 @@ function StatusComponent() {
           );
         }}
       />
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by status name...."
-        exportFileName="status Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
 
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {statusData && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {statusData && (
+          <MaterialTable
+            exportDataKeys={exportDataKeys}
+            isLoading={isLoading}
+            data={statusData}
+            columns={columns}
+            reset={reset}
+            setReset={setReset}
+          />
+        )}
       </div>
 
       <Modal
@@ -260,155 +284,138 @@ function StatusComponent() {
           );
         }}
       >
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values, { setSubmitting }) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            });
+          }}
         >
-          <Modal.Header closeButton>
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Status Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="status"
-                    name="status"
-                    required
-                    maxLength={30}
-                    defaultValue={modal.modalData ? modal.modalData.status : ''}
-                    onKeyPress={(e) => {
-                      Validation.CharacterWithSpace(e);
-                    }}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                    onCopy={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
-                  />
-                </div>
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_1"
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
+          {({ isSubmitting }) => (
+            <Form>
+              <Modal.Header closeButton>
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Status Name :<span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        name="status"
+                      />
+                      <ErrorMessage
+                        name="status"
+                        component="small"
+                        className="text-danger"
+                      />
                     </div>
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark :
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        name="remark"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="small"
+                        className="text-danger"
+                      />
+                    </div>
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                value="1"
+                              />
+                              <label className="form-check-label">Active</label>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                value="0"
+                                disabled={!modal.modalData}
+                              />
+                              <label className="form-check-label">
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {!modal.modalData ? (
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    style={{
+                      backgroundColor: '#484C7F',
+                      width: '80px',
+                      padding: '8px'
+                    }}
+                  >
+                    Add
+                  </button>
+                ) : (
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      disabled={isSubmitting}
+                      type="submit"
+                      className="btn btn-primary text-white"
+                      style={{ backgroundColor: '#484C7F' }}
+                    >
+                      Update
+                    </button>
+                  )
                 )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
-              >
-                Add
-              </button>
-            )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
-                Update
-              </button>
-            ) : (
-              ''
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: '',
-                    modalHeader: ''
-                  })
-                );
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );
@@ -418,22 +425,25 @@ function StatusDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new StatusService().getStatus().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        let counter = 1;
-        for (const key in data) {
-          if (data[key].is_active === 1) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              status: data[key].status
-            });
+    new StatusService()
+      .getStatus()
+      .then((res) => {
+        if (res?.status === 200) {
+          const data = res?.data?.data;
+          let counter = 1;
+          for (const key in data) {
+            if (data[key].is_active === 1) {
+              tempData.push({
+                counter: counter++,
+                id: data[key].id,
+                status: data[key].status
+              });
+            }
           }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

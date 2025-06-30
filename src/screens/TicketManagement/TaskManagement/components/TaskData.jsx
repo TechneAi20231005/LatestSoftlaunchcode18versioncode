@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { _base } from '../../../../settings/constants';
 import Avatar from 'react-avatar';
 import { Dropdown } from 'react-bootstrap';
@@ -26,7 +26,7 @@ export default function TaskData(props) {
   const allData = props;
 
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   if (data.priority === 'High') {
     priorityColor = 'bg-danger';
   }
@@ -385,7 +385,7 @@ export default function TaskData(props) {
                   disabled={
                     !props?.data?.taskOwners.some(
                       (owner) =>
-                        owner.id === parseInt(sessionStorage.getItem('id'), 10)
+                        owner.id === parseInt(localStorage.getItem('id'), 10)
                     )
                   }
                   title="Start Group Activity Task"
@@ -528,7 +528,7 @@ export default function TaskData(props) {
                   </button>
                 </li>
               )}
-              {props && props.isReviewer === 0 && (
+              {/* {props && props.isReviewer === 0 && (
                 <li>
                   <Link
                     to={
@@ -543,8 +543,8 @@ export default function TaskData(props) {
                     </button>
                   </Link>
                 </li>
-              )}
-              {props && (
+              )} */}
+              {/* {props && (
                 <li>
                   <Link
                     to={
@@ -559,7 +559,7 @@ export default function TaskData(props) {
                     </button>
                   </Link>
                 </li>
-              )}
+              )} */}
 
               <li onClick={handleSubtaskModal}>
                 <button className="btn btn-sm btn-info text-white w-100">
@@ -602,6 +602,37 @@ export default function TaskData(props) {
                 <button className="btn btn-sm btn-danger text-white w-100">
                   <i className="icofont-listing-number"></i> Task Regularization
                 </button>
+                {/* //// Test Cases */}
+                {data?.convention_name?.toUpperCase() === 'UPLOAD' && (
+                  <li
+                    onClick={() =>
+                      navigate(
+                        `/${_base}/TestDraft/${data?.ticket_id ?? 'null'}/${
+                          data?.task_id ?? 'null'
+                        }`
+                      )
+                    }
+                  >
+                    <button className="btn btn-sm btn-primary text-white w-100">
+                      <i className="icofont-listing-number"></i> Add Test Cases
+                    </button>
+                  </li>
+                )}
+
+                {data?.convention_name?.toUpperCase() === 'REVIEW' && (
+                  <li
+                    onClick={() =>
+                      navigate(
+                        `/${_base}/TestCaseReview/${data?.ticket_id}/${data?.task_id}`
+                      )
+                    }
+                  >
+                    <button className="btn btn-sm btn-primary text-white w-100">
+                      <i className="icofont-listing-number"></i> Review Test
+                      Cases
+                    </button>
+                  </li>
+                )}
               </li>
             </Dropdown.Menu>
           </Dropdown>

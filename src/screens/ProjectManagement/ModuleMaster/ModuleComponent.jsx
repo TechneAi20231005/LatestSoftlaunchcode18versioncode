@@ -1,57 +1,37 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
-import ErrorLogService from '../../../services/ErrorLogService';
 import ModuleService from '../../../services/ProjectManagementService/ModuleService';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
-
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   //local state
 
-  const [notify, setNotify] = useState(null);
   const [data, setData] = useState([]);
-  const [exportData, setExportData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [checkRole, setCheckRole] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
-
-  //Data Table columns
 
   const columns = [
     {
-      name: 'Action',
-      width: '5%',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 120,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/Module/Edit/` + row.id}
+            to={`/${_base}/Module/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -59,84 +39,109 @@ function ModuleComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '5%', selector: (row) => row.counter, sortable: true },
     {
-      name: 'Module Name',
-      width: '15%',
-      selector: (row) => row.module_name,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.counter || '--',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
     },
     {
-      name: 'Project Name',
-      width: '15%',
-      selector: (row) => row.project_name,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.module_name || '--',
+      header: 'Module Name',
+      size: 200,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
-      name: 'Status',
-      width: '10%',
-      selector: (row) => row.is_active,
-      sortable: false,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger">Deactive</span>
-          )}
-        </div>
+      accessorFn: (originalRow) => originalRow.project_name || '--',
+      header: 'Project Name',
+      size: 200
+    },
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => (
+        <span
+          className={`badge ${
+            row?.original?.is_active === 1 ? 'bg-primary' : 'bg-danger'
+          }`}
+        >
+          {row?.original?.is_active === 1 ? 'Active' : 'Deactive'}
+        </span>
       )
     },
     {
-      name: 'Description',
-      width: '10%',
-      selector: (row) => row.description,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.description || '--',
+      header: 'Description',
+      size: 190
     },
     {
-      name: 'Remark',
-      width: '10%',
-      selector: (row) => row.remark,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.remark || '--',
+      header: 'Remark',
+      size: 160
     },
 
     {
-      name: 'Created By',
-      width: '10%',
-      selector: (row) => row.created_by,
-      sortable: true
+      accessorFn: (originalRow) => new Date(originalRow.created_at),
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Created At',
-      width: '10%',
-      selector: (row) => row.created_at,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 190
     },
     {
-      name: 'Updated By',
-      width: '10%',
-      selector: (row) => row.updated_by,
-      sortable: true
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated At',
-      width: '10%',
-      selector: (row) => row.updated_at,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
-  const loadData = useCallback(async () => {
-    setIsLoading(true);
+  const exportDataKeys = {
+    module_name: 'Module Name',
+    project_name: 'Project Name',
+    description: 'Description',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Module Master Record'
+  };
 
+  const loadData = useCallback(async () => {
     const data = [];
     await new ModuleService()
       .getModule()
       .then((res) => {
-        if (res.status === 200) {
+        if (res?.status === 200) {
           let counter = 1;
-          const temp = res.data.data;
+          const temp = res?.data?.data?.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -157,73 +162,42 @@ function ModuleComponent() {
           setData(null);
           setData(data);
           setIsLoading(false);
-
-          let exportData = [];
-          for (const key in data) {
-            exportData.push({
-              SrNo: exportData.length,
-
-              module_name: data[key].module_name,
-              project_name: data[key].project_name,
-              is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
-              remark: data[key].remark,
-              updated_at: data[key].updated_at,
-              updated_by: data[key].updated_by,
-              created_by: temp[key].created_by,
-
-              description: data[key].description
-            });
-          }
-          setExportData(exportData);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Module Master',
-          'Get_Module',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+        errorHandler(error);
+      })
+      .finally(() => setIsLoading(false));
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            const getRoleId = sessionStorage.getItem('role_id');
+            setCheckRole(res?.data?.data?.filter((d) => d.menu_id === 21));
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [roleId]);
 
   useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
-  }, [loadData, location]);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Module Master"
         renderRight={() => {
@@ -243,31 +217,16 @@ function ModuleComponent() {
           );
         }}
       />
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by module name...."
-        exportFileName="Module Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
 
       <div className="mt-2">
-        <div className="col-sm-12">
-          {isLoading && <TableLoadingSkelton />}
-          {!isLoading && data && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
-          )}
-        </div>
+        {data && (
+          <MaterialTable
+            exportDataKeys={exportDataKeys}
+            isLoading={isLoading}
+            columns={columns}
+            data={data}
+          />
+        )}
       </div>
     </div>
   );
@@ -278,9 +237,9 @@ function ModuleDropdown(props) {
   useEffect(() => {
     const tempData = [];
     new ModuleService().getModule().then((res) => {
-      if (res.status === 200) {
+      if (res?.status === 200) {
         let counter = 1;
-        const data = res.data.data;
+        const data = res?.data?.data;
         for (const key in data) {
           tempData.push({
             counter: counter++,

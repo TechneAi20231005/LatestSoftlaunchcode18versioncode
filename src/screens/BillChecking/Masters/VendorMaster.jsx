@@ -32,6 +32,8 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function VendorMaster({ match }) {
   const [data, setData] = useState([]);
@@ -49,9 +51,9 @@ function VendorMaster({ match }) {
   const [Panuppercase, SetPanUpeeerCase] = useState();
   const [ifscodeUppercase, setIfsccodeUppercase] = useState();
   const [succes, setSucces] = useState();
-  const [error, setError] = useState();
+  const [error, setError] = useState(null);
 
-  const [notify, setNotify] = useState();
+  const [notify, setNotify] = useState(null);
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
@@ -95,6 +97,24 @@ function VendorMaster({ match }) {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
   };
+
+  // const downLoadAttachment = (attachmentLink) => {
+  //   if (attachmentLink) {
+  //     const splitAttachment = attachmentLink.split('/');
+  //     const linkAttachment = `${_attachmentUrl}${attachmentLink}`;
+  //     const url = window.URL.createObjectURL(new Blob([linkAttachment]));
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.download = splitAttachment[splitAttachment.length - 1];
+  //     link.setAttribute(
+  //       'download',
+  //       splitAttachment[splitAttachment.length - 1]
+  //     );
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }
+  // };
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -169,13 +189,23 @@ function VendorMaster({ match }) {
           >
             <i className="icofont-edit text-success"></i>
           </button>
-          <Link
-            to={`/${_base}/ViewVendorDetails/` + row.id}
+          {/* <Link
+            to={`/${_base}/ViewVendorDetails/` + row?.id}
             className="btn btn-sm btn-primary text-white"
             style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
           >
             <i className="icofont-eye-alt"></i>
-          </Link>
+          </Link> */}
+
+          {_base && row && row?.id && (
+            <Link
+              to={`/${_base}/ViewVendorDetails/${row?.id}`}
+              className="btn btn-sm btn-primary text-white"
+              style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
+            >
+              <i className="icofont-eye-alt"></i>
+            </Link>
+          )}
         </div>
       )
     },
@@ -545,6 +575,8 @@ function VendorMaster({ match }) {
   const loadData = async () => {
     setIsLoading(null);
     setIsLoading(true);
+    setNotify(null);
+    setError(null);
 
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
@@ -619,19 +651,24 @@ function VendorMaster({ match }) {
         }
       });
 
-    await new VendorMasterService().getActiveCountry().then((res) => {
-      if (res.status === 200) {
-        setCountry(res.data.data);
-        setCountryDropdown(
-          res.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
-            }))
-        );
-      }
-    });
+    await new VendorMasterService()
+      .getActiveCountry()
+      .then((res) => {
+        if (res.status === 200) {
+          setCountry(res.data.data?.data);
+          setCountryDropdown(
+            res.data.data?.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
+              }))
+          );
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -644,9 +681,9 @@ function VendorMaster({ match }) {
 
     await new VendorMasterService().getActiveState().then((res) => {
       if (res.status === 200) {
-        setState(res.data.data);
+        setState(res.data.data?.data);
         setStateDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data.map((d) => ({
             value: d.id,
             label: d.state
           }))
@@ -656,9 +693,9 @@ function VendorMaster({ match }) {
 
     await new VendorMasterService().getActiveCity().then((res) => {
       if (res.status === 200) {
-        setCity(res.data.data);
+        setCity(res.data.data?.data);
         setCityDropdown(
-          res.data.data
+          res.data.data?.data
             .filter((d) => d.is_active === 1)
             .map((i) => ({
               value: i.id,
@@ -831,16 +868,25 @@ function VendorMaster({ match }) {
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: 'success', message: res.data.message });
+                // setNotify({ type: 'success', message: res.data.message });
+                toast.success(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: false, modalData: '', modalHeader: '' });
                 setPanAttachment([]);
                 loadData();
               } else {
-                setError({ type: 'danger', message: res.data.message });
+                // setError({ type: 'danger', message: res.data.message });
+                toast.error(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: true, modalData: '', modalHeader: '' });
               }
             } else {
-              setError({ type: 'danger', message: res.data.message });
+              // setError({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
               setModal({ showModal: true, modalData: '', modalHeader: '' });
 
               new ErrorLogService().sendErrorLog(
@@ -854,7 +900,11 @@ function VendorMaster({ match }) {
           .catch((error) => {
             const { response } = error;
             const { request, ...errorObject } = response;
-            setError({ type: 'danger', message: 'Request Error !!!' });
+            // setError({ type: 'danger', message: 'Request Error !!!' });
+            toast.error('Request Error !!!', {
+              position: 'top-right'
+            });
+
             new ErrorLogService().sendErrorLog(
               'Vendor',
               'Create_Vendor',
@@ -897,14 +947,23 @@ function VendorMaster({ match }) {
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: 'success', message: res.data.message });
+                // setNotify({ type: 'success', message: res.data.message });
+                toast.success(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: false, modalData: '', modalHeader: '' });
                 loadData();
               } else {
-                setError({ type: 'danger', message: res.data.message });
+                // setError({ type: 'danger', message: res.data.message });
+                toast.error(res.data.message, {
+                  position: 'top-right'
+                });
               }
             } else {
-              setError({ type: 'danger', message: res.data.message });
+              // setError({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
               new ErrorLogService().sendErrorLog(
                 'Vendor',
                 'Create_Vendor',
@@ -1297,7 +1356,9 @@ function VendorMaster({ match }) {
   const handleEmail = (e) => {
     const email = e.target.value;
     const emailRegex =
-      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+      // /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+      /^([a-zA-Z\d\.-]+)@([a-zA-Z\d-]+)\.([a-zA-Z]{2,8})(\.[a-zA-Z]{2,8})?$/;
+
     if (email === '') {
       setEmailError('');
       setMailError(false);
@@ -1647,18 +1708,28 @@ function VendorMaster({ match }) {
     form.append('created_by', userSessionData.userId);
 
     setError(null);
-
     await new VendorMasterService().bulkUploadVendor(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           handleBulkModal({ showModal: false });
-          setNotify({ type: 'success', message: res.data.message });
+          // setNotify({ type: 'success', message: res.data.message });
+          toast.success(res.data.message, {
+            position: 'top-right',
+            autoClose: 10000
+          });
           loadData();
+        } else if (res.data.status == 2) {
+          toast.error(res.data.message, {
+            position: 'top-right',
+            autoClose: 10000
+          });
         } else {
-          setError({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right',
+            autoClose: 10000
+          });
           URL = `${_attachmentUrl}` + res.data.data;
           window.open(URL, '_blank')?.focus();
-          setNotify({ type: 'danger', message: res.data.message });
         }
       }
     });
@@ -1677,6 +1748,7 @@ function VendorMaster({ match }) {
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
+                    setNotify(null);
                     handleModal({
                       showModal: true,
                       modalData: '',
@@ -1737,7 +1809,7 @@ function VendorMaster({ match }) {
                 {data && (
                   <DataTable
                     columns={columns}
-                    data={filteredData}
+                    data={filteredData && filteredData}
                     defaultSortFieldId="id"
                     expandableRows={true}
                     pagination
@@ -1925,6 +1997,7 @@ function VendorMaster({ match }) {
                       <Select
                         id="country"
                         name="country"
+                        classNamePrefix="react-select"
                         options={CountryDropdown}
                         ref={countryRef}
                         onChange={handleCountryChange}
@@ -1953,6 +2026,7 @@ function VendorMaster({ match }) {
                       <Select
                         id="state"
                         name="state"
+                        classNamePrefix="react-select"
                         options={stateDropdown}
                         onChange={handleStateChange}
                         ref={stateRef}
@@ -1979,6 +2053,7 @@ function VendorMaster({ match }) {
                       <Select
                         id="city"
                         name="city"
+                        classNamePrefix="react-select"
                         ref={cityRef}
                         options={cityDropdown}
                         defaultValue={
@@ -2182,7 +2257,12 @@ function VendorMaster({ match }) {
                               style={{ backgroundColor: '#EBF5FB' }}
                             >
                               <div className="card-header p-1">
-                                <div className="d-flex justify-content-between align-items-center p-0 ">
+                                <div
+                                  className="d-flex justify-content-between align-items-center p-0 "
+                                  // onClick={() =>
+                                  //   downLoadAttachment(attachment?.path)
+                                  // }
+                                >
                                   <a
                                     href={
                                       attachment?.path
@@ -3371,7 +3451,8 @@ function VendorMaster({ match }) {
                             });
                           } else if (
                             !value.match(
-                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                              // /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                              /^(?=.*[A-Za-z])[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
                             )
                           ) {
                             setInputState({
@@ -3407,7 +3488,8 @@ function VendorMaster({ match }) {
                             });
                           } else if (
                             !value.match(
-                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                              // /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                              /^(?=.*[A-Za-z])[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
                             )
                           ) {
                             setInputState({
@@ -3500,7 +3582,7 @@ function VendorMaster({ match }) {
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersOnlyForPan(e);
                       }}
-                      defaultValue={modal.modalData.consider_in_payment}
+                      defaultValue={modal.modalData.consider_in_payment?.toUpperCase()}
                     >
                       <option value="">SELECT...</option>
                       <option value="YES">YES</option>
@@ -3521,8 +3603,9 @@ function VendorMaster({ match }) {
                       name="acme_account_name"
                       value={erp}
                       readOnly={
-                        authorities &&
-                        authorities.Update_ERP_Account_Name === false
+                        (authorities &&
+                          authorities.Update_ERP_Account_Name === false) ||
+                        modal?.modalHeader === 'Add Vendor'
                           ? true
                           : false
                       }
@@ -3553,7 +3636,6 @@ function VendorMaster({ match }) {
                       </small>
                     )}
                   </div>
-
                   {consider === 'YES' && paymentDropdown && (
                     <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
@@ -3563,6 +3645,7 @@ function VendorMaster({ match }) {
                       <Select
                         id="payment_template"
                         name="payment_template"
+                        classNamePrefix="react-select"
                         options={paymentDropdown}
                         ref={considerInRef}
                         defaultValue={
@@ -3626,7 +3709,7 @@ function VendorMaster({ match }) {
                     </div>
                   )}
                   {consider && consider === 'PETTY_CASH' && considerInPay && (
-                    <div className="col-sm-3 mt-4">
+                    <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
                         Ref Number :
                       </label>
@@ -3759,20 +3842,12 @@ function VendorMaster({ match }) {
             </Modal.Body>
             <Modal.Footer>
               {!modal.modalData && (
-                <button
-                  type="submit"
-                  className="btn btn-primary text-white"
-                  style={{ backgroundColor: '#484C7F' }}
-                >
-                  Save
+                <button type="submit" className="btn btn-primary text-white">
+                  Submit
                 </button>
               )}
               {modal.modalData && (
-                <button
-                  type="submit"
-                  className="btn btn-primary text-white"
-                  style={{ backgroundColor: '#484C7F' }}
-                >
+                <button type="submit" className="btn btn-primary text-white">
                   Update
                 </button>
               )}
@@ -3780,6 +3855,7 @@ function VendorMaster({ match }) {
                 type="button"
                 className="btn btn-danger text-white"
                 onClick={() => {
+                  setNotify(null);
                   handleModal({
                     showModal: false,
                     modalData: '',
@@ -3787,7 +3863,7 @@ function VendorMaster({ match }) {
                   });
                 }}
               >
-                Close
+                Cancel
               </button>
             </Modal.Footer>
           </form>

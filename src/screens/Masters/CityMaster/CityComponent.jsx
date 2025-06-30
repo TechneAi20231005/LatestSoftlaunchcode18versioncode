@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
 import Select from 'react-select';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,16 +7,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import CityService from '../../../services/MastersService/CityService';
 
 import PageHeader from '../../../components/Common/PageHeader';
-
-import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 import {
   handleModalInStore,
   handleModalClose
 } from '../../Dashboard/DashbordSlice';
+//pradeep commented
 
+//pradeep commented 2
 import {
   getCityData,
   getCountryData,
@@ -27,29 +25,28 @@ import {
   updateCityData
 } from '../../Dashboard/DashboardAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import { customSearchHandler } from '../../../utils/customFunction';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
+import moment from 'moment';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 function CityComponent() {
   // initial state
 
+  const [reset, setReset] = useState(false);
   const dispatch = useDispatch();
 
   //redux state
 
   const {
     cityData,
-    notify,
     modal,
     filteredStateData,
     filteredCountryData,
-    activeState,
-    exportCityData
+    activeState
   } = useSelector((state) => state?.dashboard);
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCityDataList
   );
-  console.log('filteredStateData', filteredStateData);
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 7)
   );
@@ -57,154 +54,221 @@ function CityComponent() {
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [updateStatus, setUpdateStatus] = useState({});
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(cityData, searchTerm);
-    setFilteredData(filteredList);
-  }, [cityData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(cityData);
+  const clearFilters = () => {
+    setReset(true);
   };
+  const columns = useMemo(
+    () => [
+      {
+        header: 'Action',
+        accessorKey: 'action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleModalInStore({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit City'
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        )
+      },
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 90,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'city',
+        header: 'City',
+        filterVariant: 'autocomplete',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
+          }
+        }),
+        size: 125
+      },
+      {
+        accessorKey: 'state',
+        header: 'State',
+        size: 150
+      },
+      {
+        accessorKey: 'country',
+        header: 'Country',
+        size: 175
+      },
+      {
+        accessorKey: 'is_active',
+        header: 'Status',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
+            </span>
+          );
+        }
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Created At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ row }) =>
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
+        size: 350
+      },
+      {
+        accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
+        header: 'Created By',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        id: 'updated_by',
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        header: 'Updated By',
+        size: 185
+      }
+    ],
+    [dispatch]
+  );
 
-  //columns
-  const columns = [
+  const fields = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalInStore({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Edit City'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      )
+      name: 'country_id',
+      label: 'Country name',
+      required: true,
+      alphaNumeric: false
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      name: 'state_id',
+      label: 'State name',
+      required: true,
+      alphaNumeric: false
     },
     {
-      name: 'City',
-      selector: (row) => row.city,
-      sortable: true,
-      width: '125px'
+      name: 'city',
+      label: 'City name',
+      max: 100,
+      min: 3,
+      required: true,
+      alphaNumeric: true
     },
     {
-      name: 'State',
-      selector: (row) => row.state,
-      sortable: true,
-      width: '125px'
-    },
-    {
-      name: 'Country',
-      selector: (row) => row.country,
-      sortable: true,
-      width: '125px'
-    },
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '150px'
-    },
-    {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '150px'
+      name: 'remark',
+      label: 'Remark',
+      max: 255,
+      required: false,
+      alphaNumeric: true
     }
   ];
+  const exportDataKeys = {
+    city: 'City',
+    state: 'State',
+    country: 'Country',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'City Master Record'
+  };
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
-    var flag = 1;
+  const validationSchema = CustomValidation(fields);
 
-    var selectCountry = form.getAll('country_id');
-    var selectState = form.getAll('state_id');
-    if (selectCountry === '' || selectState === '') {
-      flag = 0;
-      if (selectCountry === '') {
-        alert('Please Select Country');
-      } else if (selectState === '') {
-        alert('Please Select State');
-      }
-    }
-    if (flag === 1) {
+  let valueof = modal.modalData
+    ? filteredCountryData.find((d) => modal.modalData.country_id === d.value)
+    : '';
+
+  let stateValue = modal.modalData
+    ? filteredStateData?.find((d) => modal.modalData.state_id === d.value)
+    : '';
+
+  const initialValues = {
+    country_id: valueof?.value || '',
+    state_id: stateValue?.value || '',
+    city: modal.modalData?.city || '',
+    remark: modal?.modalData?.remark || '',
+    is_active: String(modal.modalData?.is_active) ?? '1'
+  };
+
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
+    const formData = new FormData();
+    formData.append('country_id', values.country_id);
+    formData.append('state_id', values.state_id);
+    formData.append('city', values.city);
+    formData.append('remark', values.remark);
+
+    const editformdata = new FormData();
+    editformdata.append('country_id', values.country_id);
+    editformdata.append('state_id', values.state_id);
+    editformdata.append('city', values.city);
+    editformdata.append('remark', values.remark);
+    editformdata.append('is_active', values.is_active);
+    try {
       if (!id) {
-        dispatch(postCityData(form)).then((res) => {
-          if (res?.payload?.data?.status === 1) {
-            dispatch(getCityData());
-          } else {
-          }
-        });
+        await dispatch(postCityData(formData));
+        dispatch(getCityData());
       } else {
-        dispatch(updateCityData({ id: id, payload: form })).then((res) => {
-          if (res?.payload?.data?.status === 1) {
-            dispatch(getCityData());
-          } else {
-          }
-        });
+        await dispatch(updateCityData({ id: id, payload: editformdata }));
+        dispatch(getCityData());
       }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+      clearFilters();
     }
   };
 
   const handleCountryChange = (e) => {
+    if (!e || Object.entries(e).length === 0) return;
+
     setStateDropdownData(
       activeState &&
         activeState
@@ -239,37 +303,12 @@ function CityComponent() {
   ]);
 
   useEffect(() => {
-    setFilteredData(cityData);
-  }, [cityData]);
-
-  useEffect(() => {
     dispatch(getCityData());
   }, [dispatch]);
 
   useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-
-  // useEffect(() => {
-  //   if (dependent.country_id !== null) {
-  //     const newStates = [...copyState];
-
-  //     const filterNewState = newStates.filter((state) => {
-  //       if (state.country_id === dependent.country_id) {
-  //         return {
-  //           value: state.id,
-  //           label: state.state,
-  //           country_id: state.country_id
-  //         };
-  //       }
-  //     });
-  //     setStateDropdownData(filterNewState);
-  //   }
-  // }, [dependent, copyState]);
-
-  useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
 
     if (modal.modalData) {
@@ -283,8 +322,6 @@ function CityComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="City Master"
         renderRight={() => {
@@ -314,232 +351,239 @@ function CityComponent() {
           );
         }}
       />
-
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by city name...."
-        exportFileName="City Master Record"
-        exportData={exportCityData}
-        showExportButton={true}
-      />
       <div className="mt-2">
         {cityData && (
-          <DataTable
+          <MaterialTable
             columns={columns}
-            data={filteredData}
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            progressPending={isLoading}
-            progressComponent={<TableLoadingSkelton />}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
+            data={cityData}
+            isLoading={isLoading}
+            reset={reset}
+            setReset={setReset}
+            exportDataKeys={exportDataKeys}
           />
         )}
       </div>
-
       <Modal centered show={modal.showModal}>
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(value, { setSubmitting }) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            })
+          }
         >
-          <Modal.Header
-            closeButton
-            onClick={() => {
-              dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: null,
-                  modalHeader: 'Add City'
-                })
-              );
-            }}
-          >
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Select Country :<Astrick color="red" size="13px" />
-                  </label>
-                  <Select
-                    options={filteredCountryData && filteredCountryData}
-                    id="country_id"
-                    name="country_id"
-                    onChange={handleCountryChange}
-                    defaultValue={
-                      modal.modalData
-                        ? filteredCountryData?.filter(
-                            (d) => modal?.modalData?.country_id === d.value
-                          )
-                        : ''
-                    }
-                    required={true}
-                  />
-                </div>
-
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Select State :<Astrick color="red" size="13px" />
-                  </label>
-                  <Select
-                    options={stateDropdownData}
-                    id="state_id"
-                    name="state_id"
-                    onChange={handleCountryChange}
-                    defaultValue={
-                      modal.modalData
-                        ? filteredStateData.filter(
-                            (d) => modal.modalData.state_id === d.value
-                          )
-                        : ''
-                    }
-                    required={true}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    City Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="city"
-                    name="city"
-                    maxLength={25}
-                    required
-                    defaultValue={modal.modalData ? modal.modalData.city : ''}
-                    onKeyPress={(e) => {
-                      Validation.CharacterWithSpace(e);
-                    }}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                    onCopy={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
-                  />
-                </div>
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_1"
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
+          {({ isSubmitting, setFieldValue, values }) => (
+            <Form>
+              <Modal.Header
+                closeButton
+                onClick={() =>
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: null,
+                      modalHeader: 'Add City'
+                    })
+                  )
+                }
+              >
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    {/* Select Country */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Select Country: <span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Select
+                        classNamePrefix="react-select"
+                        options={filteredCountryData}
+                        id="country_id"
+                        name="country_id"
+                        isClearable={true}
+                        onChange={(selectedOption) => {
+                          setFieldValue('state_id', null);
+                          setFieldValue('country_id', selectedOption?.value);
+                          handleCountryChange(selectedOption);
+                        }}
+                        defaultValue={
+                          modal.modalData
+                            ? filteredCountryData.find(
+                                (d) => modal.modalData.country_id === d.value
+                              )
+                            : ''
+                        }
+                        // value={values.country_id}
+                      />
+                      <ErrorMessage
+                        name="country_id"
+                        component="small"
+                        className="text-danger small"
+                      />
                     </div>
+
+                    {/* Select State */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Select State: <span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Select
+                        classNamePrefix="react-select"
+                        options={stateDropdownData && stateDropdownData}
+                        name="state_id"
+                        id="state_id"
+                        isClearable={true}
+                        onChange={(selectedOption) =>
+                          setFieldValue(
+                            'state_id',
+                            selectedOption?.value || null
+                          )
+                        }
+                        defaultValue={
+                          modal.modalData
+                            ? filteredStateData?.find(
+                                (d) => modal.modalData.state_id === d.value
+                              )
+                            : ''
+                        }
+                        value={
+                          values.state_id
+                            ? stateDropdownData?.find(
+                                (item) => item.value === Number(values.state_id)
+                              )
+                            : null // Bind to Formik's state_id
+                        }
+                        // value={values.state_id}
+                      />
+                      <ErrorMessage
+                        name="state_id"
+                        component="small"
+                        className="text-danger small"
+                      />
+                    </div>
+
+                    {/* City Name */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        City Name: <span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Field
+                        type="text"
+                        id="city"
+                        name="city"
+                        className="form-control form-control-sm"
+                      />
+                      <ErrorMessage
+                        name="city"
+                        component="small"
+                        className="text-danger small"
+                      />
+                    </div>
+
+                    {/* Remark */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark:
+                      </label>
+                      <Field
+                        type="text"
+                        name="remark"
+                        id="remark"
+                        className="form-control form-control-sm"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="small"
+                        className="text-danger small"
+                      />
+                    </div>
+
+                    {/* Status */}
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status: <span style={{ color: 'red' }}>*</span>
+                        </label>
+
+                        <div className="row">
+                          <div className="col-md-2">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_1"
+                                value="1"
+                              />
+                              <label className="form-check-label">Active</label>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_0"
+                                value="0"
+                              />
+                              <label className="form-check-label">
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {!modal.modalData && (
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    disabled={isSubmitting}
+                  >
+                    Submit
+                  </button>
                 )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
-              >
-                Add
-              </button>
-            )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
-                Update
-              </button>
-            ) : (
-              ''
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: null,
-                    modalHeader: 'Add City'
-                  })
-                );
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
+
+                {modal.modalData &&
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      type="submit"
+                      className="btn btn-primary text-white"
+                      disabled={isSubmitting}
+                    >
+                      Update
+                    </button>
+                  )}
+
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: null,
+                        modalHeader: 'Add City'
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );

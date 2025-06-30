@@ -185,7 +185,7 @@ function TestingTypeComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
@@ -210,7 +210,8 @@ function TestingTypeComponent() {
                     );
                   }}
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add
+                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Testing
+                  Type
                 </button>
               ) : (
                 ''
@@ -365,24 +366,12 @@ function TestingTypeComponent() {
           </Modal.Body>
           <Modal.Footer>
             {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
-              >
-                Add
+              <button type="submit" className="btn btn-primary text-white">
+                Submit
               </button>
             )}
             {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
+              <button type="submit" className="btn btn-primary text-white">
                 Update
               </button>
             ) : (

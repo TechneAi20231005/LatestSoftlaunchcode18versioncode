@@ -32,26 +32,24 @@ const TimeRegularizationHistory = (props) => {
         // Process the data
         if (res.status === 200) {
           if (res?.data?.data?.length > 0) {
-            const temp = res.data.data
-              ?.filter((d) => d?.status_remark !== 'PENDING')
-              ?.map((d) => ({
-                id: d.id,
-                created_by_name: d.created_by_name,
-                from_date: d.from_date,
-                to_date: d.to_date,
-                from_time: d.from_time,
-                to_time: d.to_time,
-                remark: d.remark,
-                is_checked: 0,
-                regularization_time_status: d.regularization_time_status,
-                task_name: d.task_name,
-                ticket_id_name: d.ticket_id_name,
-                actual_time: d.actual_time,
-                task_hours: d.task_hours,
-                scheduled_time: d.scheduled_time,
-                approved_by_name: d.approved_by_name,
-                status: d.status_remark
-              }));
+            const temp = res.data.data?.map((d) => ({
+              id: d.id,
+              created_by_name: d.created_by_name,
+              from_date: d.from_date,
+              to_date: d.to_date,
+              from_time: d.from_time,
+              to_time: d.to_time,
+              remark: d.remark,
+              is_checked: 0,
+              regularization_time_status: d.regularization_time_status,
+              task_name: d.task_name,
+              ticket_id_name: d.ticket_id_name,
+              actual_time: d.actual_time,
+              task_hours: d.task_hours,
+              scheduled_time: d.scheduled_time,
+              approved_by_name: d.approved_by_name,
+              status: d.status_remark
+            }));
 
             // Assuming setDataa is a function to set the state
             props?.setHistoryData(temp);
@@ -188,7 +186,7 @@ const TimeRegularizationHistory = (props) => {
                       <th className="text-center"> Scheduled Time </th>
 
                       <th className="text-center"> Remark </th>
-                      <th className="text-center"> Approved By </th>
+                      <th className="text-center"> Approved/Rejected By </th>
 
                       <th className="text-center"> Status</th>
                     </tr>
@@ -289,8 +287,12 @@ const TimeRegularizationHistory = (props) => {
                                 className="form-control form-control-sm"
                                 id={`approved_by_name${i}`}
                                 name="approved_by_name[]"
-                                style={{ width: '100px' }}
-                                value={x.approved_by_name}
+                                style={{ width: '120px' }}
+                                value={
+                                  x.status === 'PENDING'
+                                    ? ''
+                                    : x.approved_by_name
+                                }
                                 required
                                 readOnly={true}
                               />

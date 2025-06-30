@@ -1,5 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import GeneralSettingService from '../../services/SettingService/GeneralSettingService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../utils';
 
 export const getGeneralSettingData = createAsyncThunk(
   'getGeneralSettingData',
@@ -22,7 +24,7 @@ export const postGeneralSettingData = createAsyncThunk(
       const response = await service.createGeneralSetting(config);
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -32,14 +34,13 @@ export const updateGeneralSettingData = createAsyncThunk(
   async (payload, thunkapi) => {
     try {
       const service = new GeneralSettingService();
-      console.log('c', payload);
       const response = await service.updateGeneralSetting(
         payload.id,
         payload.payload
       );
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );

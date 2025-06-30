@@ -3,17 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
-import Alert from '../../../../components/Common/Alert';
-
 import { getRegularizationTimeData } from '../../../../services/TicketService/TaskService';
 
 import { useDispatch } from 'react-redux';
 
 import { postTimeRegularizationData } from '../../BasketManagement/Slices/TimeRegularizationAction';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../../utils';
 const RequestModal = (props) => {
-  const [notify, setNotify] = useState(null);
-
   const basketStartDate = props.date;
 
   const timeDifference = '';
@@ -30,7 +28,6 @@ const RequestModal = (props) => {
   var ticket_task_id = props.data.id;
 
   const [isLoading, setIsLoading] = useState(false);
-
   const handleFirstCheckboxChange = (e) => {
     if (e) {
       if (e.target.checked) {
@@ -61,21 +58,24 @@ const RequestModal = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setNotify(null);
-
+    if (isLoading) return;
+    setIsLoading(true);
     const data = new FormData(e.target);
     data?.append('scheduled_time', props.data.task_hours);
-    dispatch(postTimeRegularizationData(data)).then((res) => {
-      if (res?.payload?.data?.status === 1) {
-        setNotify({ type: 'success', message: res?.payload?.data?.message });
-        setTimeout(() => {
-          props.close();
-          props.taskData();
-        }, 1000);
-      } else {
-        setNotify({ type: 'danger', message: res?.payload?.data?.message });
-      }
-    });
+    dispatch(postTimeRegularizationData(data))
+      .then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          toast.success(res.payload.data.message);
+          setTimeout(() => {
+            props.close();
+            props.taskData();
+          }, 1000);
+        } else {
+          toast.error(res.payload.data.message);
+        }
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setIsLoading(false));
   };
 
   const handleRemoveClick = (index) => {
@@ -91,16 +91,16 @@ const RequestModal = (props) => {
   const loadData = () => {
     setIsLoading(null);
     setIsLoading(true);
-    new getRegularizationTimeData(props.data.ticket_id, props.data.id).then(
-      (res) => {
+    new getRegularizationTimeData(props.data.ticket_id, props.data.id)
+      .then((res) => {
         if (res.status === 200) {
-          setIsLoading(false);
           if (res.data.data) {
             setRegularizeTimeData(res.data.data);
           }
         }
-      }
-    );
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setIsLoading(false));
   };
   useEffect(() => {
     const updatedRows = rows.map((row) => ({
@@ -186,7 +186,14 @@ const RequestModal = (props) => {
       return;
     }
 
-    if (toTime?.length > 0 && toTime < fromTime) {
+    // Combine fromDate and fromTime into a single datetime object
+    const fromDateTime = new Date(`${fromDate}T${fromTime}`).getTime();
+
+    // Combine toDate and toTime into a single datetime object
+    const toDateTime = new Date(`${toDate}T${toTime}`).getTime();
+
+    // Check if toTime is earlier than fromTime, considering different dates
+    if (toTime?.length > 0 && toDateTime < fromDateTime) {
       alert('To time cannot be earlier than from time.');
       return;
     }
@@ -337,10 +344,9 @@ const RequestModal = (props) => {
         onHide={props.hide}
         dialogClassName="modal-100w"
         size="xl"
+        backdrop="static"
         aria-labelledby="example-custom-modal-styling-title"
       >
-        {notify && <Alert alertData={notify} />}
-
         <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
             Time Regularization
@@ -413,7 +419,6 @@ const RequestModal = (props) => {
                       <th className="text-center"> Action</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     {regularizeTimeData && regularizeTimeData.length > 0 ? (
                       <>
@@ -494,16 +499,69 @@ const RequestModal = (props) => {
                               setRegularizeTimeData(updatedData);
                             };
 
+                            // const handleToTimeChange = (index, value) => {
+                            //   const updatedData = [...regularizeTimeData];
+                            //   const toDate = updatedData[index].to_date;
+
+                            //   const currentDate = new Date()
+                            //     .toISOString()
+                            //     .split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+
+                            //   updatedData[index].to_time = value;
+
+                            //   if (
+                            //     toDate === currentDate &&
+                            //     value > currentTimeFormatted
+                            //   ) {
+                            //     alert('To time cannot be a future time.');
+                            //     return;
+                            //   }
+
+                            //   const fromTime = updatedData[index].from_time;
+                            //   if (fromTime && value < fromTime) {
+                            //     alert(
+                            //       'To time cannot be earlier than from time.'
+                            //     );
+                            //     return;
+                            //   }
+
+                            //   const actualTime = calculateActualTime(
+                            //     updatedData[index].from_date,
+                            //     updatedData[index].to_date,
+                            //     updatedData[index].from_time,
+                            //     updatedData[index].to_time
+                            //   );
+
+                            //   const [hours, minutes] = actualTime
+                            //     .split(':')
+                            //     .map(Number);
+                            //   const actualTimeValue = hours * 60 + minutes;
+                            //   if (actualTimeValue > 12 * 60) {
+                            //     alert(
+                            //       'Actual time is greater than 12:00 hours.'
+                            //     );
+                            //     return;
+                            //   }
+
+                            //   updatedData[index].actual_time = actualTime;
+                            //   setRegularizeTimeData(updatedData);
+                            // };
+
                             const handleToTimeChange = (index, value) => {
                               const updatedData = [...regularizeTimeData];
                               const toDate = updatedData[index].to_date;
+                              const fromDate = updatedData[index].from_date;
 
                               const currentDate = new Date()
                                 .toISOString()
-                                .split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+                                .split('T')[0]; // Current date in 'YYYY-MM-DD'
+                              const currentTimeFormatted = new Date()
+                                .toTimeString()
+                                .split(' ')[0]; // Current time in 'HH:MM:SS'
 
                               updatedData[index].to_time = value;
 
+                              // Check if 'to_date' is the current date and 'to_time' is in the future
                               if (
                                 toDate === currentDate &&
                                 value > currentTimeFormatted
@@ -513,13 +571,24 @@ const RequestModal = (props) => {
                               }
 
                               const fromTime = updatedData[index].from_time;
-                              if (fromTime && value < fromTime) {
+
+                              // Combine dates and times into full Date objects for accurate comparison
+                              const fromDateTime = new Date(
+                                `${fromDate}T${fromTime}`
+                              ).getTime();
+                              const toDateTime = new Date(
+                                `${toDate}T${value}`
+                              ).getTime();
+
+                              // Check if 'to_time' is earlier than 'from_time' considering the dates
+                              if (toDateTime < fromDateTime) {
                                 alert(
                                   'To time cannot be earlier than from time.'
                                 );
                                 return;
                               }
 
+                              // Calculate actual time in hours and minutes
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
                                 updatedData[index].to_date,
@@ -531,6 +600,7 @@ const RequestModal = (props) => {
                                 .split(':')
                                 .map(Number);
                               const actualTimeValue = hours * 60 + minutes;
+
                               if (actualTimeValue > 12 * 60) {
                                 alert(
                                   'Actual time is greater than 12:00 hours.'

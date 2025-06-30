@@ -49,7 +49,9 @@ export const getGenerateRequisitionListThunk = createAsyncThunk(
           filterValue?.size_range?.length > 0
             ? `&size_range=${filterValue?.size_range}`
             : ''
-        }${datatype ? `&datatype=${datatype}` : ''}`
+        }${filterValue?.is_hide ? `&is_hide=${filterValue?.is_hide}` : ''}${
+          datatype ? `&datatype=${datatype}` : ''
+        }`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

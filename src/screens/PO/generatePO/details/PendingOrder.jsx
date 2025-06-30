@@ -7,6 +7,7 @@ import { Field, Formik } from 'formik';
 import { toast } from 'react-toastify';
 
 // // static import
+import PageHeader from '../../../../components/Common/PageHeader';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
 import { CustomReactSelect } from '../../../../components/custom/inputs/CustomInputs';
 import {
@@ -69,11 +70,7 @@ function PendingOrder() {
       name: 'Pending Quantity',
       selector: (row, index) =>
         row?.open_qty ? (
-          <p className="bg-warning px-1">
-            {Number(row?.open_qty) - Number(row?.total_po_qty) > 0
-              ? Number(row?.open_qty) - Number(row?.total_po_qty)
-              : 0}
-          </p>
+          <p className="bg-warning px-1">{Number(row?.open_qty)}</p>
         ) : (
           '---'
         ),
@@ -245,7 +242,23 @@ function PendingOrder() {
 
   return (
     <Container fluid className="pending_order_container">
-      <h3 className="fw-bold text_primary"> PO</h3>
+      <PageHeader
+        showBackBtn
+        headerTitle="PO"
+        renderRight={() => {
+          return (
+            <div>
+              <p className="mb-0">
+                <strong>Vender Name:</strong> {generatePoFilter?.vender_name}
+              </p>
+              <p>
+                <strong>Delivery Date:</strong>{' '}
+                {generatePoFilter?.delivery_date}
+              </p>
+            </div>
+          );
+        }}
+      />
       <div className="d-flex fw-bold mb-2">
         <p className="mb-0">Item</p>
         <i className="icofont-caret-right text-warning fs-5" />
@@ -264,6 +277,7 @@ function PendingOrder() {
             <Stack gap={3}>
               <div className="d-flex w-100">
                 <Field
+                  classNamePrefix="react-select"
                   component={CustomReactSelect}
                   options={categoryData}
                   styleData="w-100"
@@ -286,6 +300,7 @@ function PendingOrder() {
                 <Row className="align-items-end row_gap_3">
                   <Col md={5}>
                     <Field
+                      classNamePrefix="react-select"
                       component={CustomReactSelect}
                       options={weightRangeData}
                       styleData="w-100"
@@ -301,6 +316,7 @@ function PendingOrder() {
                   </Col>
                   <Col md={5}>
                     <Field
+                      classNamePrefix="react-select"
                       component={CustomReactSelect}
                       options={sizeRangeData}
                       styleData="w-100"

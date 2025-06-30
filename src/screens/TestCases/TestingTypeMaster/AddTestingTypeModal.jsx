@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -16,8 +16,17 @@ import {
   editTestingTypeMasterThunk,
   getTestingTypeMasterListThunk
 } from '../../../redux/services/testCases/testingTypeMaster';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
-function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
+function AddTestingTypeModal({
+  show,
+  close,
+  type,
+  currentTestingTypeData,
+  reset,
+  setReset
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const addEditTestingTypeInitialValue = {
     type_name: type === 'EDIT' ? currentTestingTypeData?.type_name : '',
@@ -25,19 +34,28 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
     is_active:
       type === 'EDIT' ? currentTestingTypeData?.is_active?.toString() : 1
   };
-
+  const clearFilters = () => {
+    setReset(true);
+  };
   // // function
 
   const handleAddEditTestingType = ({ formData }) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (type === 'ADD') {
       dispatch(
         addTestingTypeMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
+
+            setIsSubmitting(false);
             close();
             dispatch(getTestingTypeMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     } else {
@@ -46,14 +64,36 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
           currentId: currentTestingTypeData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
+
+            setIsSubmitting(false);
             close();
             dispatch(getTestingTypeMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     }
   };
+  const fields = [
+    {
+      name: 'type_name',
+      label: 'Testing Type',
+      min: 3,
+      max: 100,
+      required: true,
+      alphaBet: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
 
   return (
     <>
@@ -64,7 +104,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
       >
         <Formik
           initialValues={addEditTestingTypeInitialValue}
-          validationSchema={addTestingType}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handleAddEditTestingType({ formData: values });
           }}
@@ -77,6 +117,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                     component={CustomInput}
                     name="type_name"
                     label="Testing Type Title"
+                    id="testingtypemaster_testingtypetitle"
                     placeholder="Enter Testing Type Title"
                     requiredField
                   />
@@ -86,6 +127,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                     component={CustomInput}
                     name="remark"
                     label="Remark"
+                    id="testingtypemaster_remark"
                     placeholder="Enter Remark"
                   />
                 </Col>
@@ -100,6 +142,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                       type="radio"
                       name="is_active"
                       label="Active"
+                      id="testingtypemaster_active"
                       value="1"
                       inputClassName="me-1"
                     />
@@ -108,6 +151,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                       type="radio"
                       name="is_active"
                       label="Deactive"
+                      id="testingtypemaster_deactive"
                       value="0"
                       inputClassName="me-1"
                     />
@@ -117,15 +161,15 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
 
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-4"
                   type="submit"
-                  disabled={!dirty}
+                  disabled={!dirty || isSubmitting}
                 >
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
-                  className="btn btn-shadow-light px-3"
+                  className="btn btn-danger px-3"
                   type="button"
                 >
                   Cancel

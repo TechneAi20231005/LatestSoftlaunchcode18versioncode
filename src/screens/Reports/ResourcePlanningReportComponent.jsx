@@ -14,10 +14,14 @@ import { _base } from '../../settings/constants';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
+import errorHandler from '../../utils/errorHandler';
+import NotFound from '../../components/NotFound';
 
 export default function ResourcePlanningReportComponent() {
   const [userData, setUserData] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [exportData, setExportData] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
@@ -63,7 +67,7 @@ export default function ResourcePlanningReportComponent() {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter(
+        const data = res.data.data?.data?.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
@@ -111,11 +115,17 @@ export default function ResourcePlanningReportComponent() {
     setFromdateformat(setfromformatdate);
   };
 
-  const handleForm = async (e) => {
+  const handleForm = async (values) => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
-    e.preventDefault();
-    const formData = new FormData(e.target);
+    // e.preventDefault();
+    // const formData = new FormData(e.target);
+    const formData = new FormData();
+    formData.append('from_date', values.from_date);
+    formData.append('to_date', values.to_date);
+    values?.user_id?.forEach((item) => {
+      formData?.append('user_id[]', item?.value);
+    });
     const tempData = [];
     var flag = 1;
 
@@ -145,23 +155,11 @@ export default function ResourcePlanningReportComponent() {
                     tasks: data[key].tasks
                   });
                 }
-                setData(null);
+                setData([]);
                 setData(tempData);
 
-                // Export data
-                // const exportTempData = [];
-                // for (const i in data) {
-                //     const tasks = Array.isArray(data[i].tasks) ? data[i].tasks.map(task => task.task_name).join(", ") : "";
-                //     exportTempData.push({
-                //         Sr: data[i].counter,
-                //         date: data[i].date,
-                //         user_name: data[i].user_name,
-                //         task_name: tasks,
-                //         task_hours: data[i].hours,
-                //       });
-                // }
-
                 const exportTempData = [];
+
                 for (const i in data) {
                   const tasks = Array.isArray(data[i].tasks)
                     ? data[i].tasks
@@ -171,8 +169,13 @@ export default function ResourcePlanningReportComponent() {
                     exportTempData.push({
                       sr: counter++,
                       ticket_id: task.ticket_id,
+                      job_role: data[i].job_role || '-',
+                      sprint_name: task.sprint_name || '-',
+                      sprint_start_date: task.sprint_start_date || '-',
+                      sprint_end_date: task.sprint_end_date || '-',
                       date: data[i].date,
                       user_name: data[i].user_name,
+                      type_name: task.type_name || '-',
                       task_name: task.task_name,
                       total_hours: task.total_hours
                     });
@@ -181,10 +184,10 @@ export default function ResourcePlanningReportComponent() {
 
                 setExportData(exportTempData);
               } else {
-                setData(null);
+                setData([]);
               }
             } else {
-              setData(null);
+              setData([]);
             }
           } else {
             new ErrorLogService().sendErrorLog(
@@ -193,6 +196,7 @@ export default function ResourcePlanningReportComponent() {
               'INSERT',
               res.message
             );
+            setShowLoaderModal(null);
           }
         } catch (error) {
           if (error.response && error.response.data) {
@@ -202,6 +206,8 @@ export default function ResourcePlanningReportComponent() {
               'INSERT',
               error.response.data.message
             );
+            errorHandler(error?.response);
+            setShowLoaderModal(null);
           } else {
             new ErrorLogService().sendErrorLog(
               'ResourcePlanning',
@@ -222,6 +228,7 @@ export default function ResourcePlanningReportComponent() {
           <tr>
             <th>Sr</th>
             <th>Task Name</th>
+            <th>Sprint Name</th>
             <th>Task Hour</th>
           </tr>
         </thead>
@@ -242,6 +249,7 @@ export default function ResourcePlanningReportComponent() {
                     </Link>
                     - {task.task_name}
                   </td>
+                  <td>{task.sprint_name || '-'}</td>
                   <td>{task.total_hours}</td>
                 </tr>
               );
@@ -259,97 +267,161 @@ export default function ResourcePlanningReportComponent() {
     if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
+  const fields = [
+    {
+      name: 'from_date',
+      label: 'From Date',
+      required: true,
+      alphaNumeric: false,
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
+    },
+    {
+      name: 'to_date',
+      label: 'To Date',
+      required: true,
+      alphaNumeric: false,
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
+  const initialValues = {
+    user_id: [],
+    from_date: '',
+    to_date: ''
+  };
+
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle="Resource Planing Report" />
+      <PageHeader headerTitle="Resource Planning Report" />
 
       <div className="card mt-2" style={{ zIndex: 10 }}>
         <div className="card-body">
-          <form onSubmit={handleForm}>
-            <div className="row">
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>Select User :</b>
-                </label>
-                <Select
-                  isMulti
-                  isSearchable={true}
-                  name="user_id[]"
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  options={userData}
-                  style={{ zIndex: '100' }}
-                />
-              </div>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              handleForm(values);
+            }}
+          >
+            {({ setFieldValue, values }) => (
+              <Form>
+                <div className="row">
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>Select User :</b>
+                    </label>
+                    <Select
+                      classNamePrefix="react-select"
+                      isMulti
+                      isSearchable={true}
+                      name="user_id"
+                      value={values.user_id}
+                      className="basic-multi-select"
+                      // classNamePrefix="select"
+                      options={userData}
+                      style={{ zIndex: '100' }}
+                      onChange={(option) =>
+                        setFieldValue('user_id', option || null)
+                      }
+                    />
+                  </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    From Date :<Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  name="from_date"
-                  onChange={handleFromDate}
-                  required
-                />
-              </div>
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>
+                        From Date :<Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <Field
+                      type="date"
+                      className="form-control form-control-sm"
+                      name="from_date"
+                      onChange={(option) => {
+                        handleFromDate(option);
+                        setFieldValue(
+                          'from_date',
+                          option?.target?.value || null
+                        );
+                      }}
+                    />
+                    <ErrorMessage
+                      name="from_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    To Date :<Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  name="to_date"
-                  onChange={handleToDate}
-                  required
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
-              </div>
-              <div
-                className="col-md-10"
-                style={{
-                  textAlign: 'right',
-                  marginTop: '20px',
-                  fontWeight: '600'
-                }}
-              >
-                <ExportToExcel
-                  className="btn btn-sm btn-danger"
-                  apiData={exportData}
-                  fileName="Planning Report"
-                />
-              </div>
-            </div>
-          </form>
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>
+                        To Date :<Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <Field
+                      type="date"
+                      className="form-control form-control-sm"
+                      name="to_date"
+                      onChange={(option) => {
+                        handleToDate(option);
+                        setFieldValue('to_date', option?.target?.value || null);
+                      }}
+                    />
+                    <ErrorMessage
+                      name="to_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
+                </div>
+                <div className="d-flex mt-3">
+                  <div className="d-flex  ms-md-auto">
+                    <button
+                      className="btn  btn-warning text-white"
+                      type="submit"
+                      style={{ fontWeight: '600' }}
+                    >
+                      <i className="icofont-search-1 "></i> Search
+                    </button>
+                    <button
+                      className="btn  btn-info text-white"
+                      type="button"
+                      onClick={() => {
+                        setFieldValue('user_id', []);
+                        setFieldValue('task_name', '');
+                        setFieldValue('from_date', '');
+                        setFieldValue('to_date', '');
+                      }}
+                      style={{ fontWeight: '600' }}
+                    >
+                      <i className="icofont-refresh text-white"></i> Reset
+                    </button>
+                  </div>
+
+                  {exportData && (
+                    <ExportToExcel
+                      className="btn btn-sm btn-danger"
+                      apiData={exportData}
+                      fileName="Planning Report"
+                    />
+                  )}
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
 
@@ -363,6 +435,7 @@ export default function ResourcePlanningReportComponent() {
                   data={data}
                   defaultSortField="title"
                   pagination
+                  noDataComponent={<NotFound topMargin={0} />}
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}

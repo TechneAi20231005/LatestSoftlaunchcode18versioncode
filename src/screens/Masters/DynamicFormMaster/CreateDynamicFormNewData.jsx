@@ -320,7 +320,6 @@ function CreateDynamicForm({ match }) {
                   <h2 className="mb-0 fw-bold ">Dynamic Form</h2>
                 </div>
               </div>
-              {notify && <Alert alertData={notify} />}
               <Modal
                 show={showDynamicFormModal.display}
                 onHide={(e) => handleDynamicModal(e, false, null, null)}
@@ -898,6 +897,7 @@ function CreateDynamicForm({ match }) {
                                   <b>{d.label} :</b>
                                 </label>
                                 <Select
+                                  classNamePrefix="react-select"
                                   className="form-control"
                                   id={d.id}
                                   name={d.name}

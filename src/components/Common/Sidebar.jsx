@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 // // static import
 import { _base } from '../../settings/constants';
 import {
-  getEmployeeListThunk,
+  // getEmployeeListThunk,
   getMenuListThunk
 } from '../../redux/services/Sidebar';
 
@@ -87,7 +87,7 @@ const Sidebar = ({ activekey }) => {
   }, [handleClickOutside]);
 
   useEffect(() => {
-    dispatch(getEmployeeListThunk({ user_id: user_id }));
+    // dispatch(getEmployeeListThunk({ user_id: user_id }));
     dispatch(getMenuListThunk({ role_id: role_id }));
     document.children[0]?.setAttribute('data-theme', 'light');
   }, [user_id, role_id]);
@@ -101,7 +101,7 @@ const Sidebar = ({ activekey }) => {
       }`}
     >
       <div className="d-flex flex-column h-100">
-        <a href="hr-dashboard" className="mb-0 brand-icon">
+        <Link to={`/${_base}/Dashboard`} className="mb-0 brand-icon">
           <span className="logo-icon">
             <svg
               width="35"
@@ -118,8 +118,8 @@ const Sidebar = ({ activekey }) => {
               <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"></path>
             </svg>
           </span>
-          <span className="logo-text">My-Task</span>
-        </a>
+          <span className="logo-text">Connect Us</span>
+        </Link>
 
         <ul className="menu-list flex-grow-1 mt-3">
           {sidebarMenuList?.map((item, index) => {
@@ -130,9 +130,9 @@ const Sidebar = ({ activekey }) => {
 
             return (
               <li key={`menu-item-${index}`} className={`collapsed `}>
-                <a
+                <Link
                   className={`m-link`}
-                  href={hasChildren ? '#!' : `/${_base}/${item.routerLink[0]}`}
+                  to={hasChildren ? '#!' : `/${_base}/${item.routerLink[0]}`}
                   onClick={
                     hasChildren
                       ? (e) => {
@@ -147,7 +147,7 @@ const Sidebar = ({ activekey }) => {
                   {hasChildren && (
                     <span className="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
                   )}
-                </a>
+                </Link>
                 {hasChildren && (
                   <ul
                     className="sub-menu collapse has-children"

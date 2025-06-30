@@ -1,75 +1,142 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Container,
+  Grid,
+  Chip,
+  ButtonBase,
+  Backdrop,
+  CircularProgress
+} from '@mui/material';
+import { Link } from 'react-router-dom';
 import PageHeader from '../../components/Common/PageHeader';
 import {
   getAllNotification,
   markedReadNotification
 } from '../../services/NotificationService/NotificationService';
-import { Link } from 'react-router-dom';
 import { _base } from '../../settings/constants';
 
-export default function NotificationComponent() {
-  const [notifications, setNotifications] = useState();
+const NotificationComponent = () => {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getNotifications = () => {
+    setLoading(true);
     getAllNotification(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
-        setNotifications(null);
-        setNotifications(res.data.data);
+        setNotifications(res.data.data || []);
+        setLoading(false);
+      } else {
+        setLoading(false);
       }
     });
   };
-  const handleReadNotification = (e, id) => {
-    markedReadNotification(id).then((res) => {
+
+  const handleReadNotification = (id) => {
+    markedReadNotification(id).then(() => {
       getNotifications();
     });
   };
+
   useEffect(() => {
     getNotifications();
   }, []);
-  return (
-    <div className="container-xxl">
-      <PageHeader
-        headerTitle={`Your Notifications (${
-          notifications ? notifications.length : 0
-        })`}
-      />
 
-      <div className="card mt-2" style={{ zIndex: 10 }}>
-        <div className="card-body">
-          {notifications &&
-            notifications.map((ele, i) => {
-              const date = ele.created_at.split(' ')[0];
-              const time = ele.created_at.split(' ')[1];
-              return (
-                <div
-                  className="row d-flex justify-content-center"
-                  style={{ cursor: 'pointer' }}
+  return (
+    <Container
+      maxWidth="sm"
+      sx={{
+        marginLeft: 0
+      }}
+    >
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Box display="flex" alignItems="center" mb={3}>
+        <PageHeader
+          headerTitle={`Your Notifications (${notifications?.length || 0})`}
+        />
+      </Box>
+
+      <Grid container spacing={2} sx={{ width: '100%', margin: 0 }}>
+        {notifications?.map((ele, i) => {
+          const [date, time] = ele.created_at.split(' ');
+
+          return (
+            <Grid item xs={12} key={ele.id} sx={{ width: '100%' }}>
+              <ButtonBase
+                onClick={() => handleReadNotification(ele.id)}
+                component={Link}
+                to={`/${_base}/${ele.url}`}
+                sx={{ width: '100%', textAlign: 'left' }}
+              >
+                <Card
+                  variant="outlined"
+                  sx={{
+                    width: '100%',
+                    borderRadius: 2,
+                    borderLeft:
+                      ele.is_read === 0
+                        ? '4px solid #3b82f6'
+                        : '4px solid transparent',
+                    transition: 'all 0.3s',
+                    boxShadow: 'rgba(99, 99, 99, 0.1) 0px 2px 8px 0px',
+                    '&:hover': {
+                      boxShadow: 3,
+                      transform: 'translateY(-2px)'
+                    }
+                  }}
                 >
-                  <div className="col-md-6">
-                    <div
-                      className="card mt-2"
-                      onClick={(e) => handleReadNotification(e, ele.id)}
+                  <CardContent>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      mb={1}
+                      flexWrap="wrap" // Allow items to wrap on small screens
                     >
-                      <div className="card-body">
-                        <div className="flex-fill ms-2">
-                          <Link to={`/${_base}/${ele.url}`}>
-                            <p className="d-flex justify-content-between mb-0">
-                              <span className="fw-bold badge bg-primary p-2">{`Date: ${date}`}</span>
-                              <span className="fw-bold badge bg-danger p-2">{`Time: ${time}`}</span>
-                            </p>
-                            <p className="font-weight-bold mt-2">
-                              {ele.message}
-                            </p>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-      </div>
-    </div>
+                      <Chip
+                        label={`Date: ${date}`}
+                        sx={{
+                          background: '#484c7f',
+                          color: '#fff',
+                          mb: { xs: 1, sm: 0 }
+                        }}
+                        size="small"
+                      />
+                      <Chip
+                        label={`Time: ${time}`}
+                        color="error"
+                        size="small"
+                      />
+                    </Box>
+
+                    <Typography
+                      sx={{
+                        color: '#212529',
+                        fontWeight: 600,
+                        fontSize: '0.9rem',
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word'
+                      }}
+                    >
+                      {ele?.message}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </ButtonBase>
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Container>
   );
-}
+};
+
+export default NotificationComponent;

@@ -12,6 +12,9 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { getRoles } from '../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
+import NotFound from '../../components/NotFound';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
@@ -19,7 +22,7 @@ export default function ResourcePlanningReportComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 38)
   );
   const [userData, setUserData] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [exportData, setExportData] = useState(null);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -31,10 +34,22 @@ export default function ResourcePlanningReportComponent() {
     { name: 'Sr', selector: (row) => row.sr, sortable: true, width: '75px' },
     { name: 'Ticket Id', selector: (row) => row.ticket_id, sortable: true },
     {
+      name: 'Job Role',
+      selector: (row) => row.job_role || '-',
+      sortable: true,
+      width: '150px'
+    },
+    {
       name: 'Task Owner',
       selector: (row) => row.task_owner,
       sortable: true,
       width: '175px'
+    },
+    {
+      name: 'Sprint Name',
+      selector: (row) => row.sprint_name || '-',
+      sortable: true,
+      width: '150px'
     },
 
     {
@@ -184,7 +199,7 @@ export default function ResourcePlanningReportComponent() {
       'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
-        const data = res.data.data.filter(
+        const data = res.data.data?.data?.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
@@ -210,6 +225,7 @@ export default function ResourcePlanningReportComponent() {
   }, [dispatch]);
 
   const handleFromDate = (e) => {
+    console.log(e.target.value, 'e.target.value');
     const gettodatevalue = e.target.value;
     const setdateformat = gettodatevalue.split('-');
     const settoyear = setdateformat[0];
@@ -232,14 +248,21 @@ export default function ResourcePlanningReportComponent() {
     setFromdateformat(setfromformatdate);
   };
 
-  const handleForm = async (e) => {
+  const handleForm = async (values) => {
     setShowLoaderModal(true);
-    e.preventDefault();
-    const formData = new FormData(e.target);
+    // e.preventDefault();
+    const formData = new FormData();
+    formData.append('from_date', values.from_date);
+    formData.append('to_date', values.to_date);
+    values?.user_id?.forEach((item) => {
+      formData?.append('user_id[]', item?.value);
+    });
+    // const formData = new FormData(e.target);
     const tempData = [];
     const exportTempData = [];
 
     if (todateformat > fromdateformat) {
+      setShowLoaderModal(false);
       alert('Please select Date After From date');
     } else {
       await new ReportService()
@@ -256,6 +279,8 @@ export default function ResourcePlanningReportComponent() {
                     sr: sr++,
                     ticket_id: data[key].ticket_id,
                     task_owner: data[key].task_owner,
+                    sprint_name: data[key].sprint_name,
+                    job_role: data[key].job_role,
                     task_name: data[key].task_name,
                     type_name: data[key].type_name,
                     task_start_Date: data[key].task_start_Date,
@@ -269,14 +294,18 @@ export default function ResourcePlanningReportComponent() {
                     task_completed_at: data[key].task_completed_at
                   });
                 }
-                setData(null);
+                setData([]);
                 setData(tempData);
                 let count = 1;
                 for (const key in data) {
                   exportTempData.push({
                     sr: count++,
                     ticket_id: data[key].ticket_id,
+                    job_role: data[key].job_role || '-',
                     task_owner: data[key].task_owner,
+                    sprint_name: data[key].sprint_name || '-',
+                    sprint_start_date: data[key].sprint_start_date || '-',
+                    sprint_end_date: data[key].sprint_end_date || '-',
                     task_name: data[key].task_name,
                     type_name: data[key].type_name,
                     task_start_Date: data[key].task_start_Date,
@@ -294,10 +323,10 @@ export default function ResourcePlanningReportComponent() {
                 setExportData(null);
                 setExportData(exportTempData);
               } else {
-                setData(null);
+                setData([]);
               }
             } else {
-              setData(null);
+              setData([]);
             }
           } else {
             new ErrorLogService().sendErrorLog(
@@ -318,6 +347,7 @@ export default function ResourcePlanningReportComponent() {
             errorObject.data.message
           );
         });
+      setShowLoaderModal(false);
     }
   };
 
@@ -329,9 +359,42 @@ export default function ResourcePlanningReportComponent() {
     if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+  const fields = [
+    {
+      name: 'from_date',
+      label: 'From Date',
+      required: true,
+      alphaNumeric: false,
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
+    },
+    {
+      name: 'to_date',
+      label: 'To Date',
+      required: true,
+      alphaNumeric: false,
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
+  const initialValues = {
+    user_id: [],
+    from_date: '',
+    to_date: ''
+  };
 
   return (
     <div className="container-xxl">
@@ -339,90 +402,126 @@ export default function ResourcePlanningReportComponent() {
 
       <div className="card mt-2" style={{ zIndex: 10 }}>
         <div className="card-body">
-          <form onSubmit={handleForm}>
-            <div className="row">
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>Select User :</b>
-                </label>
-                {userData && (
-                  <Select
-                    isMulti
-                    isSearchable={true}
-                    name="user_id[]"
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                    options={userData && userData}
-                  />
-                )}
-              </div>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              // console.log(values, 'values');
+              handleForm(values);
+            }}
+          >
+            {({ setFieldValue, values }) => (
+              <Form>
+                {/* <form onSubmit={handleForm}> */}
+                <div className="row">
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>Select User :</b>
+                    </label>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    From Date : <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  onChange={handleFromDate}
-                  name="from_date"
-                  required
-                />
-              </div>
+                    <Select
+                      isMulti
+                      isSearchable={true}
+                      name="user_id"
+                      value={values.user_id}
+                      className="basic-multi-select"
+                      // classNamePrefix="select"
+                      classNamePrefix="react-select"
+                      options={userData && userData}
+                      onChange={(option) =>
+                        // console.log(option, "option")
+                        setFieldValue('user_id', option || [])
+                      }
+                    />
+                  </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    To Date : <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  onChange={handleToDate}
-                  name="to_date"
-                  required
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
-              </div>
-              {data && data.length > 0 && (
-                <div
-                  className="col-md-10"
-                  style={{
-                    textAlign: 'right',
-                    marginTop: '20px',
-                    fontWeight: '600'
-                  }}
-                >
-                  <ExportToExcel
-                    className="btn btn-sm btn-danger"
-                    apiData={exportData && exportData}
-                    fileName="Variance Report"
-                  />
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>
+                        From Date : <Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <Field
+                      type="date"
+                      className="form-control form-control-sm"
+                      // onChange={handleFromDate}
+                      onChange={(option) => {
+                        handleFromDate(option);
+                        setFieldValue(
+                          'from_date',
+                          option?.target?.value || null
+                        );
+                      }}
+                      name="from_date"
+                      // required
+                    />
+                    <ErrorMessage
+                      name="from_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
+
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>
+                        To Date : <Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <Field
+                      type="date"
+                      className="form-control form-control-sm"
+                      // onChange={handleToDate}
+                      onChange={(option) => {
+                        handleToDate(option);
+                        setFieldValue('to_date', option?.target?.value || null);
+                      }}
+                      name="to_date"
+
+                      // required
+                    />
+                    <ErrorMessage
+                      name="to_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
                 </div>
-              )}
-            </div>
-          </form>
+                <div className="d-flex mt-3">
+                  <div className="d-flex  ms-md-auto">
+                    <button
+                      className="btn  btn-warning text-white"
+                      type="submit"
+                      style={{ fontWeight: '600' }}
+                    >
+                      <i className="icofont-search-1 "></i> Search
+                    </button>
+                    <button
+                      className="btn btn-info text-white"
+                      type="button"
+                      onClick={() => {
+                        setFieldValue('user_id', []);
+                        setFieldValue('task_name', '');
+                        setFieldValue('from_date', '');
+                        setFieldValue('to_date', '');
+                      }}
+                      style={{ fontWeight: '600' }}
+                    >
+                      <i className="icofont-refresh text-white"></i> Reset
+                    </button>
+                  </div>
+                  {data && data.length > 0 && (
+                    <ExportToExcel
+                      className="btn btn-danger"
+                      apiData={exportData && exportData}
+                      fileName="Variance Report"
+                    />
+                  )}
+                </div>
+                {/* </form> */}
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
 
@@ -436,6 +535,7 @@ export default function ResourcePlanningReportComponent() {
                   data={data}
                   defaultSortField="title"
                   pagination
+                  noDataComponent={<NotFound topMargin={0} />}
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
