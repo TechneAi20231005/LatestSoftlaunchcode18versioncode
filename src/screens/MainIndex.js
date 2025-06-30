@@ -153,6 +153,7 @@ import GraphWeekWise from './TicketManagement/TaskManagement/Calendar-Graph/Cust
 import InterviewMaster from './HRMS/employeeJoining/interviewMaster/InterviewMaster';
 import CandidateList from './HRMS/employeeJoining/candidateList/CandidateList';
 import BranchMaster from './HRMS/employeeJoining/branchMaster/BranchMaster';
+import ShiftMaster from './HRMS/employeeJoining/shiftMaster/ShiftMaster';
 import SourceMaster from './HRMS/employeeJoining/sourceMaster/SourceMaster';
 import RemarkMaster from './HRMS/employeeJoining/remarkMaster/RemarkMaster';
 import SalaryMaster from './HRMS/employeeJoining/salaryMaster/SalaryMaster';
@@ -841,6 +842,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/BranchMaster`}
               element={<BranchMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/ShiftMaster`}
+              element={<ShiftMaster />}
             />
             <Route
               exact

@@ -65,7 +65,8 @@ import testCaseReviewSlice from '../slices/testCases/testCaseReview';
 import testBankSlice from '../slices/testCases/testBank';
 import sidebarSlice from '../slices/Sidebar';
 import jobRoleMaster from '../slices/jobRoleMaster';
-import  taskAndTicketTypeSlice  from '../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterSlice';
+import taskAndTicketTypeSlice from '../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterSlice';
+import shiftMasterSlice from '../slices/hrms/employeeJoining/shiftMaster';
 
 export const store = configureStore({
   reducer: {
@@ -91,7 +92,7 @@ export const store = configureStore({
     queryTypeMaster: QueryTypeComponetSlice,
     designationMaster: DesignationSlice,
     statusMaster: statusMasterSlice,
-    taskAndTicketType:taskAndTicketTypeSlice,
+    taskAndTicketType: taskAndTicketTypeSlice,
     projectMaster: ProjectMasterSlice,
     billChecking: BillCheckingTransactionSlice,
     vendorMaster: VendorMasterSlice,
@@ -117,6 +118,7 @@ export const store = configureStore({
     candidatesRemarkHistory: candidatesRemarkHistorySlice,
     interViewProcess: interViewProcessDataSlice,
     candidateInterviewScheduleHistory: candidateInterviewScheduleHistorySlice,
+    shiftMaster: shiftMasterSlice,
 
     // // PO
     poCommon: poCommonSlice,
