@@ -32,6 +32,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getCountryDataSort,
   getEmployeeData,
+  getPreferredShift,
   getRoles
 } from '../../Dashboard/DashboardAction';
 
@@ -44,6 +45,7 @@ import {
 import CustomerService from '../../../services/MastersService/CustomerService';
 import { errorHandler } from '../../../utils';
 import LoadingScreen from '../../../components/custom/LoadingScreen';
+import { getBranchMasterListThunk } from '../../../redux/services/hrms/employeeJoining/branchMaster';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -125,6 +127,17 @@ function EditUserComponent({ match }) {
 
   const [password, setPassword] = useState(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+
+  const [passwordError, setPasswordError] = useState(null);
+  const [passwordValid, setPasswordValid] = useState(false);
+  const [selectReportingTo, setSelectReportingTo] = useState([]);
+  const [selectBranch, setSelectBranch] = useState(null);
+  const [reporting, setReporting] = useState([]);
+
+  const getShiftData = useSelector(
+    (shiftSlice) => shiftSlice.dashboard.getShiftData
+  );
+  const [selectShift, setSelectShift] = useState('');
   // const confirmPasswordError = false;
 
   // const roleId = sessionStorage.getItem('role_id');
@@ -142,10 +155,26 @@ function EditUserComponent({ match }) {
   // const job_role = useSelector(
   //   (jobRoleSlice) => jobRoleSlice.dashboard.filterJobRoleData
   // );
+  const employeeData = useSelector(
+    (EmployeeSlice) => EmployeeSlice?.dashboard?.employeeData
+  );
 
-  const [passwordError, setPasswordError] = useState(null);
-  const [passwordValid, setPasswordValid] = useState(false);
+  const getBranchData = useSelector(
+    (branchSlice) => branchSlice?.branchMaster?.branchMasterList
+  );
 
+  const branchMasterData = getBranchData
+    ?.filter((d) => d.is_active === 1)
+    ?.map((branch) => ({
+      value: branch.id,
+      label: branch.location_name
+    }));
+
+  const defaultBranch = branchMasterData.filter(
+    (item) => item.value == data?.branch_id
+  );
+
+  const reportingToData = employeeData?.filter((d) => d.is_active === 1);
   const handlePasswordValidation = (e) => {
     // if (e.target.value === '') {
     //   setInputState({ ...state, passwordErr: 'Please enter Password' });
@@ -190,7 +219,10 @@ function EditUserComponent({ match }) {
     designationErr: '',
     departmentErr: '',
     ticketTypeShowErr: '',
-    PinCodeErr: ''
+    PinCodeErr: '',
+    reportingToErr: '',
+    shiftErr: '',
+    branchErr: ''
   });
   const [submitting, setSubmitting] = useState(false);
   function checkingValidation(form) {
@@ -206,6 +238,8 @@ function EditUserComponent({ match }) {
     var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
     var confirm_password = form.getAll('confirm_password')[0];
+    var selectShift = form.getAll('shift_type_id')[0];
+    var selectBranch = form.getAll('hired_branch_id')[0];
 
     let flag = 0;
     if (selectFirstName === '') {
@@ -251,6 +285,15 @@ function EditUserComponent({ match }) {
       flag = 1;
     } else if (mailError === true) {
       alert('Invalid Email');
+      flag = 1;
+    } else if (selectReportingTo.length === 0) {
+      setInputState({ ...state, reportingToErr: 'Please Select Reporting To' });
+      flag = 1;
+    } else if (selectShift === '') {
+      setInputState({ ...state, shiftErr: ' Please Select Shift' });
+      flag = 1;
+    } else if (selectBranch === '') {
+      setInputState({ ...state, branchErr: 'Please Select Branch' });
       flag = 1;
     }
     // else if (selectPassword === '') {
@@ -392,6 +435,18 @@ function EditUserComponent({ match }) {
       setInputState({ ...state, departmentErr: ' Please Select Department' });
       return false;
     }
+    if (selectReportingTo.length > 0) {
+      const reportingTo = selectReportingTo[0].value;
+      form.append('reporting_to', reportingTo);
+      const reportingManagers = selectReportingTo
+        .slice(1)
+        .map((item) => item.value);
+
+      reportingManagers.forEach((id) => {
+        form.append('reporting_manager[]', id);
+      });
+      setReporting([reportingTo, ...reportingManagers]);
+    }
 
     if (inputState.PinCodeErr) {
       alert('Invalid Pincode');
@@ -468,7 +523,6 @@ function EditUserComponent({ match }) {
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
-  // console.log("orderedCustomerRoleData", orderedCustomerRoleData)
 
   const [selectRole, setSelctRole] = useState(null);
   const handleSelectRole = (e) => {
@@ -578,6 +632,31 @@ function EditUserComponent({ match }) {
               roleDropdown &&
                 roleDropdown.filter((d) => d.value === temp?.role_id)
             );
+
+            setAccountFor(temp.account_for);
+            setIsReadOnly();
+
+            // Set reporting data
+            const reportingData = [];
+            if (temp.reporting_to_id) {
+              reportingData.push({
+                value: temp.reporting_to_id,
+                label: temp.reporting_to_name
+              });
+            }
+            if (
+              temp.reporting_to_mangers &&
+              temp.reporting_to_mangers.length > 0
+            ) {
+              temp.reporting_to_mangers.forEach((manager) => {
+                reportingData.push({
+                  value: manager.id,
+                  label: manager.name
+                });
+              });
+            }
+            setReporting(reportingData);
+            setSelectReportingTo(reportingData);
 
             setAccountFor(temp.account_for);
             setIsReadOnly();
@@ -830,6 +909,17 @@ function EditUserComponent({ match }) {
     }
   }, [data, stateDropdown, updateStatus]);
 
+  const allShiftData = [getShiftData].map((item) => {
+    return {
+      value: item.id,
+      label: item.shift_name
+    };
+  });
+
+  useEffect(() => {
+    setSelectShift(allShiftData);
+  }, [getShiftData]);
+
   const [copyData, setCopyData] = useState(null);
 
   const [isReadOnly, setIsReadOnly] = useState(false);
@@ -873,6 +963,11 @@ function EditUserComponent({ match }) {
     dispatch(getJobRoleMasterListThunk());
   }, []);
 
+  useEffect(() => {
+    dispatch(getEmployeeData());
+    dispatch(getBranchMasterListThunk());
+    dispatch(getPreferredShift());
+  }, []);
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
@@ -1522,54 +1617,199 @@ function EditUserComponent({ match }) {
                             />
                           </div>
                         )}
-                      </div>
-
-                      <div className="form-group row mt-3">
-                        <label className="col-sm-2 col-form-label">
+                        <label
+                          className="col-sm-3 col-form-label text-end"
+                          style={{ textAlign: 'right' }}
+                        >
                           <b>
-                            Status : <Astrick color="red" />
+                            Reporting To : <Astrick color="red" />
                           </b>
                         </label>
-                        <div className="col-sm-10">
-                          <div className="row">
-                            <div className="col-md-2">
-                              <div className="form-check">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="is_active"
-                                  id="is_active_1"
-                                  value="1"
-                                  defaultChecked={
-                                    data && data.is_active === 1 ? true : false
-                                  }
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="is_active_1"
-                                >
-                                  Active
-                                </label>
+                        <div className="col-sm-3">
+                          <Select
+                            classNamePrefix="react-select"
+                            id="reporting_to"
+                            value={reporting || []}
+                            options={
+                              reportingToData?.map((user) => ({
+                                value: user.id,
+                                label: user.name
+                              })) || []
+                            }
+                            isMulti={true}
+                            onChange={(selectedOptions) => {
+                              setReporting(selectedOptions);
+                              setSelectReportingTo(selectedOptions || []);
+
+                              if (
+                                !selectedOptions ||
+                                selectedOptions.length === 0
+                              ) {
+                                setInputState({
+                                  ...state,
+                                  reportingToErr: 'Please Select Reporting To'
+                                });
+                              } else {
+                                setInputState({
+                                  ...state,
+                                  reportingToErr: ''
+                                });
+                              }
+                            }}
+                            isClearable={true}
+                          />
+
+                          {inputState && (
+                            <small
+                              style={{
+                                color: 'red',
+                                position: 'relative'
+                              }}
+                            >
+                              {inputState.reportingToErr}
+                            </small>
+                          )}
+                        </div>
+                      </div>
+                      <div
+                        className="form-group row mb-0"
+                        style={{ position: 'relative', display: 'flex' }}
+                      >
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Preferred shift: <Astrick color="red" />
+                          </b>
+                        </label>
+                        <div className="col-sm-3">
+                          <Select
+                            classNamePrefix="react-select"
+                            id="preferred_shift"
+                            name="shift_type_id"
+                            isClearable={true}
+                            onChange={(e) => {
+                              setSelectShift(e);
+                              if (!e || Object.entries(e).length === 0) return;
+                              if (e.value === '') {
+                                setInputState({
+                                  ...state,
+                                  shiftErr: 'Please Select Shift'
+                                });
+                              } else {
+                                setInputState({ ...state, shiftErr: '' });
+                              }
+                            }}
+                            options={allShiftData || []}
+                            value={selectShift}
+                          />
+                          {inputState && (
+                            <small
+                              style={{
+                                color: 'red',
+                                position: 'relative'
+                              }}
+                            >
+                              {inputState.shiftErr}
+                            </small>
+                          )}
+                        </div>
+
+                        <label
+                          className="col-sm-3 col-form-label text-end"
+                          style={{ textAlign: 'right' }}
+                        >
+                          <b>
+                            Branch : <Astrick color="red" />
+                          </b>
+                        </label>
+                        <div className="col-sm-3">
+                          {branchMasterData && (
+                            <Select
+                              classNamePrefix="react-select"
+                              id="branch"
+                              name="hired_branch_id"
+                              defaultValue={branchMasterData?.find(
+                                (item) => item?.value == data?.branch_id
+                              )}
+                              // value={selectBranch}
+                              options={branchMasterData}
+                              onChange={(e) => {
+                                setSelectBranch(e);
+                                if (!e || Object.entries(e).length === 0)
+                                  return;
+                                if (e.value === '' || e.value === null) {
+                                  setInputState({
+                                    ...state,
+                                    branchErr: 'Please Select Branch'
+                                  });
+                                } else {
+                                  setInputState({ ...state, branchErr: '' });
+                                }
+                              }}
+                              isClearable={true}
+                            />
+                          )}
+                          {inputState && (
+                            <small
+                              style={{
+                                color: 'red',
+                                position: 'relative'
+                              }}
+                            >
+                              {inputState.branchErr}
+                            </small>
+                          )}
+                        </div>
+                        <div className="form-group row mt-3">
+                          <label className="col-sm-2 col-form-label">
+                            <b>
+                              Status : <Astrick color="red" />
+                            </b>
+                          </label>
+                          <div className="col-sm-10">
+                            <div className="row">
+                              <div className="col-md-2">
+                                <div className="form-check">
+                                  <input
+                                    className="form-check-input"
+                                    type="radio"
+                                    name="is_active"
+                                    id="is_active_1"
+                                    value="1"
+                                    defaultChecked={
+                                      data && data.is_active === 1
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor="is_active_1"
+                                  >
+                                    Active
+                                  </label>
+                                </div>
                               </div>
-                            </div>
-                            <div className="col-md-1">
-                              <div className="form-check">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="is_active"
-                                  id="is_active_0"
-                                  value="0"
-                                  defaultChecked={
-                                    data && data.is_active === 0 ? true : false
-                                  }
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor="is_active_0"
-                                >
-                                  Deactive
-                                </label>
+                              <div className="col-md-1">
+                                <div className="form-check">
+                                  <input
+                                    className="form-check-input"
+                                    type="radio"
+                                    name="is_active"
+                                    id="is_active_0"
+                                    value="0"
+                                    defaultChecked={
+                                      data && data.is_active === 0
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor="is_active_0"
+                                  >
+                                    Deactive
+                                  </label>
+                                </div>
                               </div>
                             </div>
                           </div>

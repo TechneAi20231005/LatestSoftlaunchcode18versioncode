@@ -499,3 +499,28 @@ export const getAllUserById = createAsyncThunk(
     }
   }
 );
+
+export const getPreferredShift = createAsyncThunk(
+  'getShiftMaster/1',
+  async (config, thunkapi) => {
+    try {
+      const service = new UserService();
+      const responce = await service.getPreferredShift(config);
+      // console.log('responce', responce);
+      return responce;
+    } catch (error) {
+      errorHandler(error)
+    }
+  }
+)
+// export const postPreferredShift = createAsyncThunk(
+//   'postShiftMaster',
+//   async (config, thunkapi) => {
+//     try {
+//       const service = new UserService();
+//       const responce = await service.updatePreferredShift(config);
+//       return responce;
+//     } catch (error) {
+//       errorHandler(error)
+//     }
+//   })
