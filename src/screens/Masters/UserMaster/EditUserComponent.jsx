@@ -159,23 +159,21 @@ function EditUserComponent({ match }) {
     (EmployeeSlice) => EmployeeSlice?.dashboard?.employeeData
   );
 
-  const branchData = useSelector(
+  const getBranchData = useSelector(
     (branchSlice) => branchSlice?.branchMaster?.branchMasterList
   );
 
-  // const result = getshiftDataArray.find(
-  //   (item) => item.value == getShiftData.id
-  // );
-
-  const branchMasterData = branchData
+  const branchMasterData = getBranchData
     ?.filter((d) => d.is_active === 1)
     ?.map((branch) => ({
       value: branch.id,
       label: branch.location_name
     }));
-  const defaultBranch = branchMasterData.find(
-    (item) => item.id == branchData.id
+
+  const defaultBranch = branchMasterData.filter(
+    (item) => item.value == data?.branch_id
   );
+
   const reportingToData = employeeData?.filter((d) => d.is_active === 1);
   const handlePasswordValidation = (e) => {
     // if (e.target.value === '') {
@@ -1724,26 +1722,32 @@ function EditUserComponent({ match }) {
                           </b>
                         </label>
                         <div className="col-sm-3">
-                          <Select
-                            classNamePrefix="react-select"
-                            id="branch"
-                            name="hired_branch_id"
-                            value={selectBranch}
-                            options={branchMasterData}
-                            onChange={(e) => {
-                              setSelectBranch(e);
-                              if (!e || Object.entries(e).length === 0) return;
-                              if (e.value === '' || e.value === null) {
-                                setInputState({
-                                  ...state,
-                                  branchErr: 'Please Select Branch'
-                                });
-                              } else {
-                                setInputState({ ...state, branchErr: '' });
-                              }
-                            }}
-                            isClearable={true}
-                          />
+                          {branchMasterData && (
+                            <Select
+                              classNamePrefix="react-select"
+                              id="branch"
+                              name="hired_branch_id"
+                              defaultValue={branchMasterData?.find(
+                                (item) => item?.value == data?.branch_id
+                              )}
+                              // value={selectBranch}
+                              options={branchMasterData}
+                              onChange={(e) => {
+                                setSelectBranch(e);
+                                if (!e || Object.entries(e).length === 0)
+                                  return;
+                                if (e.value === '' || e.value === null) {
+                                  setInputState({
+                                    ...state,
+                                    branchErr: 'Please Select Branch'
+                                  });
+                                } else {
+                                  setInputState({ ...state, branchErr: '' });
+                                }
+                              }}
+                              isClearable={true}
+                            />
+                          )}
                           {inputState && (
                             <small
                               style={{
