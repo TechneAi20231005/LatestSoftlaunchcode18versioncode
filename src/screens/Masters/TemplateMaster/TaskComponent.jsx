@@ -555,10 +555,12 @@ export default function TaskComponent(props) {
                         /> */}
 
                         <br />
-
                         <label>
-                          Start task{' '}
-                          {props.calculatedays === 'START_FROM'
+                          {props?.calculatedays === 'START_FROM'
+                            ? 'Start'
+                            : 'End'}{' '}
+                          task{' '}
+                          {props?.calculatedays === 'START_FROM'
                             ? 'after'
                             : 'before'}{' '}
                           days :
