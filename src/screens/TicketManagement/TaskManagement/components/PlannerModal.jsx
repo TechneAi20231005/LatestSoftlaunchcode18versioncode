@@ -269,17 +269,19 @@
 
 // export default PlannerModal;
 
-import React, { useState, useEffect } from 'react';
-import { Modal, Table } from 'react-bootstrap';
+import React, { useState, useEffect, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
 
 import {
   getTaskUser,
   updateTaskPlanner
 } from '../../../../services/TicketService/TaskService';
 
-import Select from 'react-select';
 import { toast } from 'react-toastify';
 import { errorHandler } from '../../../../utils';
+import PlannerMRT from './PlannerMRT';
+import { Box } from '@mui/material';
+import DateRangePicker from '../../../../components/Common/DateRangePicker';
 function PlannerModal(props) {
   const [plannerData, setPlannerData] = useState([]);
   const [taskUsers, setTaskUsers] = useState(null);
@@ -423,12 +425,25 @@ function PlannerModal(props) {
     setSubmitting(false);
   };
 
-  const handleChange = (e, index) => {
+  const handleChange = (value, index, userId) => {
     const sumHoras = [0, 0];
     setPlannerData((prev) => {
       const newPrev = { ...prev };
-      newPrev.data[index].total_hours = e.value;
-      return newPrev;
+      const userData = newPrev?.data?.filter((item) => item?.user_id == userId);
+
+      if (userData && userData[index]) {
+        userData[index].total_hours = value;
+      }
+
+      const updatedData = newPrev.data.map((item) => {
+        const match = userData.find((u) => u.id === item.id);
+        return match ? { ...item, total_hours: match.total_hours } : item;
+      });
+
+      return {
+        ...newPrev,
+        data: updatedData
+      };
     });
 
     for (let i = 0; i < plannerData.data.length; i++) {
@@ -460,6 +475,55 @@ function PlannerModal(props) {
       (sumHoras[1] < 10 ? '0' + sumHoras[1] : sumHoras[1]);
     setTotalHours(t);
   };
+  const [selected, setSelected] = useState([]);
+  const formref = useRef(null);
+  const handleBulkSubmit = async (bulkUser, bulkTime) => {
+    const data = new FormData(formref?.current);
+
+    const existingUsers = data.getAll('user_id[]');
+    const existingIds = data.getAll('id[]');
+    const existingHours = data?.getAll('total_hours[]');
+
+    data.delete('user_id[]');
+    data.delete('total_hours[]');
+
+    existingUsers.forEach((userId, index) => {
+      const id = existingIds[index];
+      const hour = existingHours[index];
+
+      const isSelected = selected.find(
+        (sel) =>
+          sel.user_id == userId && sel.id == id && sel?.total_hours == hour
+      );
+
+      const newUserId = isSelected ? bulkUser : userId;
+      const newHour = isSelected ? bulkTime : hour;
+
+      data.append('user_id[]', newUserId);
+      data.append('total_hours[]', newHour);
+    });
+
+    await updateTaskPlanner(plannerData.taskId, data)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            toast.success(res.data.message);
+            setTimeout(() => {
+              if (props.handleClose) {
+                props.handleClose();
+              }
+            }, 2000);
+          } else {
+            toast.error(res.data.message);
+          }
+        } else {
+          toast.error(res.message);
+        }
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setSubmitting(false));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
@@ -494,14 +558,38 @@ function PlannerModal(props) {
     loadData();
   }, []);
 
+  const handleApplyDate = (date) => {
+    if (date) {
+      setPlannerData({
+        ...props.plannerData,
+        data: props.plannerData?.data?.filter(
+          (planDate) =>
+            new Date(planDate?.date) >= new Date(date?.startDate || '') &&
+            new Date(planDate?.date) <= new Date(date?.endDate || '')
+        )
+      });
+    } else {
+      setPlannerData(props.plannerData);
+    }
+  };
+
   return (
     <>
       <Modal show={props.show} size="lg" onHide={props.handleClose}>
         <Modal.Header closeButton>
-          <h4 style={{ color: '#252640' }}>Task Planner </h4>
+          <h4
+            style={{
+              color: '#252640',
+              fontWeight: 'bold',
+              mb: '0',
+              lineHeight: '1'
+            }}
+          >
+            Task Planner
+          </h4>
         </Modal.Header>
         <Modal.Body>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} ref={formref}>
             <input
               type="hidden"
               name="ticket_basket_id"
@@ -513,131 +601,41 @@ function PlannerModal(props) {
               defaultValue={plannerData.ticket_id}
             />
 
-            <div className="row mt-3">
-              <div className="col-md-12">
-                {plannerData.data && (
-                  <Table bordered size="sm">
-                    <thead>
-                      <tr className="p-1">
-                        <th
-                          className="p-1 text-center"
-                          style={{ fontSize: '15px' }}
-                        >
-                          Sr No
-                        </th>
-                        <th
-                          className="p-1 text-center"
-                          style={{ fontSize: '15px' }}
-                        >
-                          Assigned User
-                        </th>
-                        <th
-                          className="p-1 text-center"
-                          style={{ fontSize: '15px' }}
-                        >
-                          Date
-                        </th>
-                        <th
-                          className="p-1 text-center"
-                          style={{ fontSize: '15px' }}
-                        >
-                          Hours
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {plannerData.data.map((ele, index) => {
-                        return (
-                          <tr className="p-1">
-                            <td className="p-1 text-center">
-                              {index + 1}
-                              <input
-                                type="hidden"
-                                name="id[]"
-                                defaultValue={ele.id}
-                              />
-                            </td>
-
-                            <td className="p-1">
-                              <select
-                                className="form-control form-control-sm"
-                                name="user_id[]"
-                              >
-                                {taskUsers &&
-                                  taskUsers.map((user) => {
-                                    if (user.userId === ele.user_id) {
-                                      return (
-                                        <option value={user.userId} selected>
-                                          {user.taskUsers}
-                                        </option>
-                                      );
-                                    } else {
-                                      return (
-                                        <option value={user.userId}>
-                                          {user.taskUsers}
-                                        </option>
-                                      );
-                                    }
-                                  })}
-                              </select>
-                            </td>
-
-                            <td className="p-1">
-                              <input
-                                type="date"
-                                className="form-control form-control-sm"
-                                readOnly={true}
-                                name="date[]"
-                                defaultValue={ele.date}
-                              />
-                            </td>
-
-                            <td className="p-1">
-                              {/* <input type="text" className="form-control form-control-sm"
-                                                name="total_hours[]"
-                                                min="0"
-                                                step="00.00"
-                                                defaultValue={ele.total_hours}
-                                                autoComplete="off"
-                                                onKeyPress={(e)=>{Validation.NumbersSpeicalOnly(e);handleChange(e,index)}}
-                                                /> */}
-                              <Select
-                                classNamePrefix="react-select"
-                                options={times}
-                                defaultValue={times
-                                  .filter((d) => d.value === ele.total_hours)
-                                  .map((d) => ({
-                                    label: d.label,
-                                    value: d.value
-                                  }))}
-                                name="total_hours[]"
-                                onChange={(e) => handleChange(e, index)}
-                              />
-                            </td>
-                          </tr>
-                        );
-                      })}
-
-                      <tr className="p-1" style={{ fontSize: '20px' }}>
-                        <td
-                          className="p-1 text-right"
-                          colspan="3"
-                          style={{ textAlign: 'right' }}
-                        >
-                          <b>TOTAL HOURS</b>
-                        </td>
-                        <td className="p-1">
-                          <b>{totalHours}</b>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                )}
-                {!plannerData.data && (
-                  <div className="alert alert-warning">NO PLAN ADDED !!!</div>
-                )}
+            <Box
+              sx={{
+                '& .css-1sympa5-MuiTableContainer-root': {
+                  height: '15rem !important',
+                  padding: '1rem'
+                }
+              }}
+            >
+              <DateRangePicker handleApplyDate={handleApplyDate} />
+              <PlannerMRT
+                data={plannerData.data}
+                handleChange={handleChange}
+                taskUsers={taskUsers}
+                times={times}
+                setSelected={setSelected}
+                selected={selected}
+                isLoading={props.isLoading}
+                handleBulkSubmit={handleBulkSubmit}
+              />
+              <div
+                className="p-1 d-flex justify-content-end"
+                style={{ fontSize: '20px' }}
+              >
+                <div
+                  className="p-1 text-right"
+                  colspan="3"
+                  style={{ textAlign: 'right' }}
+                >
+                  <b>TOTAL HOURS</b>
+                </div>
+                <div className="p-1">
+                  <b>{totalHours}</b>
+                </div>
               </div>
-            </div>
+            </Box>
 
             <div className="d-flex justify-content-end">
               <button
